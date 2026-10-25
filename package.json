@@ -1,0 +1,34 @@
+{
+  "name": "cancel-parity",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A Playwright check that fails the build when cancelling a subscription is harder than signing up.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Mike Schecht",
+  "bin": {
+    "cancel-parity": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --test",
+    "lint": "eslint . && tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^22.20.5",
+    "eslint": "^9.39.5",
+    "typescript": "~6.0",
+    "typescript-eslint": "^8.72.0"
+  }
+}

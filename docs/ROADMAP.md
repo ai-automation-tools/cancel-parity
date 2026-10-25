@@ -1,0 +1,78 @@
+<h1 align="center">🗺️ Roadmap</h1>
+
+<p align="center">
+  <em>From an empty CLI to a public cancel-parity that fails a bad cancel flow on a live demo, in the order it has to happen.</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/now-slice_0:_runner-F59E0B?style=for-the-badge" alt="Now: Slice 0, runner">
+  <img src="https://img.shields.io/badge/stage-incubating-2ea44f?style=for-the-badge" alt="Stage: incubating">
+  <a href="README.md"><img src="https://img.shields.io/badge/↩-docs_home-6B7280?style=for-the-badge" alt="Back to docs"></a>
+</p>
+
+---
+
+The Cancel-Parity Weekly Roadmap routine works this file top to bottom every Monday,
+Wednesday and Friday: it takes the first open item that isn't `🔒 Needs Mike` (or up to six
+`small` ones), builds it, ticks it and opens a `roadmap/auto-<date>` PR. **Every item above
+`## After public release` is a release gate.** cancel-parity goes public when all of them are
+ticked and Mike says so. Ticking an item adds its line to the [changelog](CHANGELOG.md) and
+updates any doc it made stale, in the same commit.
+
+Markers: `- [ ]` open, `- [-]` claimed by a run in progress, `- [x]` done, `- [!]` blocked
+(the reason follows on the line). `small` marks docs or config a run can batch, up to six
+per PR (untagged means a feature, one per run); `🔒 Needs Mike` marks one only Mike can do.
+
+The slices come from [product/build-plan.md](product/build-plan.md), which marks Slices 0 to 3
+as the MVP. Slices 0 to 2 are the three features above the line; Slice 3 (the HTML report and
+the Pages demo) is the live-demo item in the release phase. Every slice is tested against mock
+flows this repo owns. No item needs a real company's site or a real account.
+
+## 🧱 Slice 0: Instrumented runner
+
+- [ ] **Slice 0: walking skeleton.** `cancel-parity run` loads a config naming one flow function, runs it on an instrumented Playwright page, and writes JSON with that flow's screens (a distinct URL, or a main-landmark content change above a threshold in an SPA), clicks, typed fields, dialogs and per-screen screenshot paths. The repo carries a two-page mock site and an SPA mock under `tests/fixtures/`, served locally during tests. Fixture tests assert the exact documented counts for both, plus the ugly cases: a flow function that throws, a timeout mid-flow, an empty flow. Screenshots mask every input whose type hides what is typed, and a test proves a typed secret never appears in the JSON. Decide and document in `docs/` what counts as a screen. CI runs the fixture suite, and it is green on three consecutive runs.
+
+## ⚖️ Slice 1: Parity comparison
+
+- [ ] **Slice 1: parity comparison.** One config names a sign-up flow and a cancel flow; both run and are compared per metric with a configurable tolerance (default `0` on screens and clicks). The CLI exits 1 and names each failing metric with both values ("cancel took 6 screens, sign-up took 3"), and exits 0 otherwise. `expect(result).toHaveCancelParity()` applies the same rule inside `@playwright/test`. Sign-up totals are reported with and without payment screens. A fair fixture pair exits 0 and an unfair pair exits 1. No output uses the words compliant, non-compliant, legal, illegal or violation, enforced by a test ([ADR-002](decisions/adr-002-evidence-not-verdicts.md)).
+
+## 🔍 Slice 2: Per-screen checks
+
+- [ ] **Slice 2: the six checks.** Port the six exit-friction heuristics (retention offer, guilt copy, phone-only cancel, a pre-checked "keep my plan" box, a cancel control at 11px or smaller, a countdown timer) as plain DOM code run through `page.evaluate()` on every screen of both flows. Phone-only cancellation fails by default; the other five warn, and each severity is configurable. An unfair fixture screen makes each check fire, and none fires anywhere on the fair flow. The check code stays runner-free (pure functions over the page), the seam [ADR-001](decisions/adr-001-playwright-typescript-npm.md) keeps for a second runner later.
+
+## 🚦 Public release
+
+- [x] `small` **CI.** `.github/workflows/ci.yml` runs `npm ci`, installs Chromium, then `npm run lint`, `npm test` and `npm run build` on push to `main` and on every PR, with `permissions: contents: read`. — done 2026-10-25: shipped with the scaffold
+- [x] `small` **Security.** `SECURITY.md` says how to report a vulnerability and what counts as one. — done 2026-10-25: shipped with the scaffold
+- [x] `small` **Demo shell.** `site/index.html` with the org source bar across the top and a "coming soon" body, and `site/favicon.svg`, the app icon in the shared dark-tile format. — done 2026-10-25: shipped with the scaffold
+- [x] `small` **Secret scan.** `gitleaks git . --log-opts=--all` comes back clean on the full history. — done 2026-10-25: clean on the scaffold commit
+- [ ] `small` **README usage matches the code.** Install line, a config example of about ten lines, every command and flag run against the real build and behaving as written. The README carries ADR-002's claims-boundary text word for word and states the spec's Won't list plainly, so nobody files an issue asking it to scan competitors' sites or say "compliant".
+- [ ] **Live demo at `https://ai-automation-tools.dev/cancel-parity/`** (Slice 3). A self-contained HTML report (both flows' metrics side by side, per-screen findings with screenshots, a coverage block saying which flows ran, the viewport and what wasn't observable, and ADR-002's wording). A mock StreamFlix site in a fair and an unfair variant under `site/`. An `actions/deploy-pages` workflow that runs both flows on `main` and publishes the site and both reports, so a visitor sees a red report for the unfair flow and a green one for the fair flow without installing anything. The page keeps the source bar and app-icon favicon from the shell, holds no real personal data, and makes no network call needing a secret. The README hero's Live Demo badge points at it.
+
+## After public release
+
+Nothing below blocks go-live.
+
+### 🧩 Next slices
+
+- [ ] **Slice 4: GitHub Action.** A wrapper Action that runs cancel-parity and posts a job summary table of both flows' metrics and findings. Tested in this repo's own CI against the mock site.
+- [ ] **Slice 5: false-positive corpus.** 20 or more fair flows (mock, plus patterns from vendors' published fair flows) that the default config must pass. If more than 2 of the first 10 fail, ship the defaults as warnings until fixed (the plan's accuracy gate).
+- [ ] **Slice 6: dated citation map.** The report links each metric to the rule wording it relates to (ROSCA, California ARL, NYC DCWP, Virginia, Colorado), each with a retrieval date and "relates to", never "required by". A CI check fails when a citation is older than 180 days.
+- [ ] **Channel parity (Slices 7-8, Could).** Detect "email, chat or call us to cancel" and flag it when sign-up was online only.
+- [ ] **Mobile viewport (Slices 7-8, Could).** A second run of both flows at a phone viewport, reported beside the desktop run.
+- [ ] **fairux export (Slices 7-8, Could).** Export a captured journey in fairux's `scan-journey` format.
+
+### 📣 Publish and promote
+
+- [ ] `small` `CONTRIBUTING.md` saying how to run the tests and add a check with its fair and unfair fixtures.
+- [ ] `npm publish --dry-run` is clean, then tag v0.1 and publish to npm as `cancel-parity` (free as of 2026-10-25). 🔒 Needs Mike
+- [ ] Launch post built on the demo ("the test for 'as easy to cancel as to sign up'"), sent where front-end and growth engineers read. 🔒 Needs Mike
+- [ ] Custom subdomain `cancel-parity-demo.ai-automation-tools.dev`. 🔒 Needs Mike
+- [ ] 90 days after the repo goes public, run the stop test: fewer than 15 stars and no outside issue, PR or GitHub dependent means stop post-release work and park it; 3 or more outside users means build the slices above. 🔒 Needs Mike
+
+---
+
+<p align="center">
+  <a href="README.md">← Docs home</a> ·
+  <a href="CHANGELOG.md">Changelog →</a>
+</p>
