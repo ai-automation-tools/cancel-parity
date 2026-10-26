@@ -13,6 +13,14 @@
 
 Entries that close a roadmap item carry the roadmap phase in italics.
 
+## Unreleased
+
+**Added**
+- `cancel-parity run [--config <file>] [--out <dir>]` runs each flow in the config on an instrumented Chromium page and writes `report.json` with its screens, clicks, typed fields and dialogs, and a screenshot per screen with hidden-text inputs painted over. A flow that throws, times out or reaches no screen keeps what it recorded and makes the CLI exit 1. Fixture tests pin exact counts for a two-page site, an SPA and a cross-origin hop. *Slice 0: Instrumented runner*
+
+**Docs**
+- `docs/screens.md`: what counts as a screen (an address change or a main-landmark change of half its words, after a user action) and what the runner keeps out of the report.
+
 ## 2026-10-25
 
 **Added**

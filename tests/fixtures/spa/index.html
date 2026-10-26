@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>StreamFlix: cancel</title></head>
+<body>
+  <nav>StreamFlix account</nav>
+  <main id="app"></main>
+  <script>
+    const app = document.getElementById("app");
+    const steps = [
+      `<h1>Cancel your StreamFlix plan</h1>
+       <p>You are on the Standard plan, billed monthly.</p>
+       <button id="details">Show billing details</button>
+       <button id="next">Continue to cancel</button>`,
+      `<h1>Before you go, tell us why</h1>
+       <p>Your answer helps us improve the service for everyone.</p>
+       <label>Reason <textarea></textarea></label>
+       <button id="next">Confirm cancellation</button>`,
+      `<h1>Your plan is cancelled</h1>
+       <p>You keep access until the end of this billing period.</p>`,
+    ];
+    function show(i) {
+      app.innerHTML = steps[i];
+      // The router updates the address after rendering, as many SPAs do.
+      if (i > 0) history.pushState({}, "", "?step=" + (i + 1));
+      document.getElementById("next")?.addEventListener("click", () => show(i + 1));
+      document.getElementById("details")?.addEventListener("click", () => {
+        app.insertAdjacentHTML("beforeend", "<p>Next charge: 9.99</p>");
+      });
+    }
+    show(0);
+  </script>
+</body>
+</html>

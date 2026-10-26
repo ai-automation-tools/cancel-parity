@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/now-slice_0:_runner-F59E0B?style=for-the-badge" alt="Now: Slice 0, runner">
+  <img src="https://img.shields.io/badge/now-slice_1:_parity-F59E0B?style=for-the-badge" alt="Now: Slice 1, parity">
   <img src="https://img.shields.io/badge/stage-incubating-2ea44f?style=for-the-badge" alt="Stage: incubating">
   <a href="README.md"><img src="https://img.shields.io/badge/↩-docs_home-6B7280?style=for-the-badge" alt="Back to docs"></a>
 </p>
@@ -30,7 +30,7 @@ flows this repo owns. No item needs a real company's site or a real account.
 
 ## 🧱 Slice 0: Instrumented runner
 
-- [ ] **Slice 0: walking skeleton.** `cancel-parity run` loads a config naming one flow function, runs it on an instrumented Playwright page, and writes JSON with that flow's screens (a distinct URL, or a main-landmark content change above a threshold in an SPA), clicks, typed fields, dialogs and per-screen screenshot paths. The repo carries a two-page mock site and an SPA mock under `tests/fixtures/`, served locally during tests. Fixture tests assert the exact documented counts for both, plus the ugly cases: a flow function that throws, a timeout mid-flow, an empty flow. Screenshots mask every input whose type hides what is typed, and a test proves a typed secret never appears in the JSON. Decide and document in `docs/` what counts as a screen. CI runs the fixture suite, and it is green on three consecutive runs.
+- [x] **Slice 0: walking skeleton.** `cancel-parity run` loads a config naming one flow function, runs it on an instrumented Playwright page, and writes JSON with that flow's screens (a distinct URL, or a main-landmark content change above a threshold in an SPA), clicks, typed fields, dialogs and per-screen screenshot paths. The repo carries a two-page mock site and an SPA mock under `tests/fixtures/`, served locally during tests. Fixture tests assert the exact documented counts for both, plus the ugly cases: a flow function that throws, a timeout mid-flow, an empty flow. Screenshots mask every input whose type hides what is typed, and a test proves a typed secret never appears in the JSON. Decide and document in `docs/` what counts as a screen. CI runs the fixture suite, and it is green on three consecutive runs. — done 2026-10-26: `cancel-parity run` and the instrumented runner (`src/runner.ts`, `src/recorder.ts`), two-page, SPA and cross-origin fixtures with exact counts plus the throw, timeout and empty cases, a pixel test for masked screenshots and a secret-leak test (`tests/runner.test.ts`), the screen rule in `docs/screens.md`; CI green three runs in a row on the PR
 
 ## ⚖️ Slice 1: Parity comparison
 
