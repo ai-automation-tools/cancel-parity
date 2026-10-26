@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Test payment page</title></head>
+<body>
+  <main>
+    <h1>Test payment (sandbox)</h1>
+    <label>Name on card <input name="name"></label>
+    <a id="back" href="#">Return to StreamFlix</a>
+  </main>
+  <script>
+    document.getElementById("back").href = new URLSearchParams(location.search).get("return");
+  </script>
+</body>
+</html>

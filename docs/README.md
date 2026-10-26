@@ -21,6 +21,12 @@
 | [**🗺️ ROADMAP.md**](ROADMAP.md) | Three build slices and the release checklist above the line, everything that waits for a public repo below it. |
 | [**📋 CHANGELOG.md**](CHANGELOG.md) | Every change, newest first. Roadmap items show up here the run they're ticked. |
 
+## 📏 How it measures
+
+| Document | What's inside |
+|:---|:---|
+| [**📏 screens.md**](screens.md) | What counts as a screen, a click, a typed field and a dialog, and what the runner keeps out of the report. |
+
 ## 📦 Product and decisions
 
 | Section | What's inside |

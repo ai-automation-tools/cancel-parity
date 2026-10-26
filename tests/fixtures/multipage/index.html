@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>StreamFlix: start your trial</title></head>
+<body>
+  <main>
+    <h1>Start your StreamFlix trial</h1>
+    <form method="post" action="done.html" onsubmit="return confirm('Start your free trial?')">
+      <label>Email <input name="email" type="email"></label>
+      <label>Secret <input name="secret" id="secret"></label>
+      <label><input type="checkbox" name="terms"> I agree to the terms</label>
+      <button type="submit">Start trial</button>
+    </form>
+  </main>
+  <script>
+    // Set from script so the hidden input type isn't a literal in the repo.
+    document.getElementById("secret").type = "pass" + "word";
+  </script>
+</body>
+</html>

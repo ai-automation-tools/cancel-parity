@@ -6,6 +6,12 @@
   "type": "module",
   "license": "MIT",
   "author": "Mike Schecht",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "bin": {
     "cancel-parity": "dist/cli.js"
   },

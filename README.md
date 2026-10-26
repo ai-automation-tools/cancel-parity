@@ -33,9 +33,9 @@
 ---
 
 > [!WARNING]
-> **Nothing runs yet.** This is the scaffold: the CLI answers `--help` and `--version`.
-> The runner, the comparison and the six checks land one roadmap slice at a time. See the
-> [roadmap](docs/ROADMAP.md).
+> **Only the runner works so far.** `cancel-parity run` runs your flows and writes their
+> counts to JSON. The comparison, the six checks and the HTML report land one roadmap slice
+> at a time. See the [roadmap](docs/ROADMAP.md).
 
 ## 💡 What it's for
 
@@ -56,12 +56,37 @@ It only drives the browser your functions drive. No crawler, no telemetry, no ac
 
 | Feature | Status |
 |:---|:---|
-| **Instrumented runner** | Planned (Slice 0). Counts screens, clicks, typed fields and dialogs for a flow. |
+| **Instrumented runner** | Works. `cancel-parity run` counts screens, clicks, typed fields and dialogs for each flow, with a masked screenshot per screen. What counts as a screen: [docs/screens.md](docs/screens.md). |
 | **Parity comparison** | Planned (Slice 1). Exit 1, or a failing `expect(result).toHaveCancelParity()`, when cancel is harder. |
 | **Six per-screen checks** | Planned (Slice 2). Retention offers, guilt copy, phone-only cancel, pre-checked keep boxes, tiny cancel links, countdowns. |
 | **HTML report and live demo** | Planned (Slice 3). A fair and an unfair mock flow, with the reports CI produced. |
 
-## 🚀 Quick start (for contributors)
+## 🚀 Run your flows
+
+Not on npm yet. Build it from this repo (`npm ci && npm run build`), then put a config in your
+project. `cancel-parity.config.ts` (or `.js`, `.mjs`) default-exports the flows:
+
+```ts
+export default {
+  baseURL: process.env.CANCEL_PARITY_BASE_URL, // your staging app, from .env
+  flows: {
+    cancel: async (page) => {
+      await page.goto("/account");
+      await page.getByRole("button", { name: "Cancel plan" }).click();
+      await page.getByRole("button", { name: "Confirm" }).click();
+    },
+  },
+};
+```
+
+```bash
+node path/to/cancel-parity/dist/cli.js run   # writes cancel-parity-report/report.json
+```
+
+It exits 0 when every flow finished and 1 when one threw, timed out or reached no screen.
+`--config <file>` and `--out <dir>` change where it reads and writes.
+
+## 🧑‍💻 Quick start (for contributors)
 
 ```bash
 npm ci                                   # install dependencies
@@ -84,7 +109,7 @@ numbers, and won't run under Cypress. The full list is in the [spec](docs/produc
 | Section | What's inside |
 |:---|:---|
 | [**📚 docs/**](docs/README.md) | The roadmap, changelog, product spec, build plan and ADRs. |
-| [**🧩 src/**](src/README.md) | The CLI source. |
+| [**🧩 src/**](src/README.md) | The CLI and the instrumented runner. |
 | [**🌐 site/**](site/index.html) | The demo page GitHub Pages will serve. A "coming soon" shell for now. |
 | [**🔒 SECURITY.md**](SECURITY.md) | How to report a vulnerability. |
 
