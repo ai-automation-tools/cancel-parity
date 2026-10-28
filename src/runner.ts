@@ -11,12 +11,19 @@ const DEFAULT_THRESHOLD = 0.5;
 // Built from parts because the repo's commit hook refuses the literal input type.
 export const HIDDEN_INPUT = `input[type=${"pass" + "word"}]`;
 
+export interface Totals {
+  screens: number;
+  clicks: number;
+  typedFields: number;
+  dialogs: number;
+}
+
 export interface FlowResult {
   /** "empty" means the flow finished without reaching a single screen. */
   status: "ok" | "error" | "timeout" | "empty";
   /** First line of the error, for "error" and "timeout". */
   error?: string;
-  totals: { screens: number; clicks: number; typedFields: number; dialogs: number };
+  totals: Totals;
   screens: Screen[];
 }
 
@@ -158,16 +165,19 @@ export async function runFlow(
   };
 }
 
-/** Runs every flow in the config, each in a fresh browser context. */
-export async function runFlows(config: Config, outDir: string): Promise<Record<string, FlowResult>> {
-  const browser = await chromium.launch();
+/**
+ * Runs every flow in the config, each in a fresh browser context. Launches
+ * Chromium unless given a browser, such as the one a `@playwright/test` test has.
+ */
+export async function runFlows(config: Config, outDir: string, browser?: Browser): Promise<Record<string, FlowResult>> {
+  const b = browser ?? (await chromium.launch());
   try {
     const results: Record<string, FlowResult> = {};
     for (const [name, flow] of Object.entries(config.flows)) {
-      results[name] = await runFlow(browser, name, flow, config, outDir);
+      results[name] = await runFlow(b, name, flow, config, outDir);
     }
     return results;
   } finally {
-    await browser.close();
+    if (!browser) await b.close();
   }
 }

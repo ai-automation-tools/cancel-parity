@@ -2,12 +2,16 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { Page } from "@playwright/test";
+import { checkTolerance, type Tolerance } from "./compare.ts";
 
 /** One user journey, written or recorded with `npx playwright codegen` against your own app. */
 export type Flow = (page: Page) => Promise<void>;
 
 export interface Config {
-  /** Flow functions by name, for example `{ cancel: async (page) => { ... } }`. */
+  /**
+   * Flow functions by name, for example `{ signup: async (page) => { ... }, cancel: ... }`.
+   * Flows named `signup` and `cancel` are compared with each other.
+   */
   flows: Record<string, Flow>;
   /** Lets flows call `page.goto("/")`. */
   baseURL?: string;
@@ -15,6 +19,10 @@ export interface Config {
   timeout?: number;
   /** Share of the main landmark's words that must change for an SPA update to count as a new screen. Default 0.5. */
   screenChangeThreshold?: number;
+  /** How many more screens, clicks, typed fields or dialogs cancel may take than sign-up. Default `{ screens: 0, clicks: 0 }`. */
+  tolerance?: Tolerance;
+  /** Sign-up screens whose URL contains one of these, or matches one of these patterns, are payment screens. Default: screens on another origin. */
+  paymentUrls?: (string | RegExp)[];
 }
 
 export const DEFAULT_CONFIG_FILES = ["cancel-parity.config.ts", "cancel-parity.config.js", "cancel-parity.config.mjs"];
@@ -42,5 +50,11 @@ export function checkConfig(value: unknown): Config {
   if (c.timeout !== undefined && !(c.timeout > 0)) throw new ConfigError("`timeout` must be a positive number of milliseconds.");
   const t = c.screenChangeThreshold;
   if (t !== undefined && !(t > 0 && t <= 1)) throw new ConfigError("`screenChangeThreshold` must be above 0 and at most 1.");
+  const tol = checkTolerance(c.tolerance);
+  if (tol) throw new ConfigError(tol);
+  const p = c.paymentUrls;
+  if (p !== undefined && !(Array.isArray(p) && p.every((x) => typeof x === "string" || x instanceof RegExp))) {
+    throw new ConfigError("`paymentUrls` must be a list of strings or regular expressions.");
+  }
   return c;
 }

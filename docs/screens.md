@@ -74,7 +74,8 @@ moment of the next action. The last screen is always captured.
 | `timeout` | The flow ran past `timeout` (default 60 s) and was stopped. | 1 |
 | `empty` | The flow finished without reaching a single screen. | 1 |
 
-A config the CLI can't load or use exits 2.
+A config the CLI can't load or use exits 2. Comparing the `signup` and `cancel` flows can
+also exit 1; see [parity.md](parity.md).
 
 ## Not observed yet
 

@@ -33,9 +33,10 @@
 ---
 
 > [!WARNING]
-> **Only the runner works so far.** `cancel-parity run` runs your flows and writes their
-> counts to JSON. The comparison, the six checks and the HTML report land one roadmap slice
-> at a time. See the [roadmap](docs/ROADMAP.md).
+> **The runner and the comparison work; the six checks and the HTML report don't yet.**
+> `cancel-parity run` runs your sign-up and cancel flows, compares them and exits 1 when
+> cancel is harder. The per-screen checks and the HTML report land one roadmap slice at a
+> time. See the [roadmap](docs/ROADMAP.md).
 
 ## 💡 What it's for
 
@@ -57,19 +58,26 @@ It only drives the browser your functions drive. No crawler, no telemetry, no ac
 | Feature | Status |
 |:---|:---|
 | **Instrumented runner** | Works. `cancel-parity run` counts screens, clicks, typed fields and dialogs for each flow, with a masked screenshot per screen. What counts as a screen: [docs/screens.md](docs/screens.md). |
-| **Parity comparison** | Planned (Slice 1). Exit 1, or a failing `expect(result).toHaveCancelParity()`, when cancel is harder. |
+| **Parity comparison** | Works. Exit 1, or a failing `expect(report).toHaveCancelParity()`, when cancel takes more screens or clicks than sign-up, with a configurable tolerance. Sign-up is reported with and without payment screens. The rule: [docs/parity.md](docs/parity.md). |
 | **Six per-screen checks** | Planned (Slice 2). Retention offers, guilt copy, phone-only cancel, pre-checked keep boxes, tiny cancel links, countdowns. |
 | **HTML report and live demo** | Planned (Slice 3). A fair and an unfair mock flow, with the reports CI produced. |
 
 ## 🚀 Run your flows
 
 Not on npm yet. Build it from this repo (`npm ci && npm run build`), then put a config in your
-project. `cancel-parity.config.ts` (or `.js`, `.mjs`) default-exports the flows:
+project. `cancel-parity.config.ts` (or `.js`, `.mjs`) default-exports the flows; the ones
+named `signup` and `cancel` are compared:
 
 ```ts
 export default {
   baseURL: process.env.CANCEL_PARITY_BASE_URL, // your staging app, from .env
+  tolerance: { screens: 0, clicks: 0 },         // the default
   flows: {
+    signup: async (page) => {
+      await page.goto("/join");
+      await page.getByLabel("Email").fill(process.env.CANCEL_PARITY_TEST_EMAIL);
+      await page.getByRole("button", { name: "Start trial" }).click();
+    },
     cancel: async (page) => {
       await page.goto("/account");
       await page.getByRole("button", { name: "Cancel plan" }).click();
@@ -83,8 +91,11 @@ export default {
 node path/to/cancel-parity/dist/cli.js run   # writes cancel-parity-report/report.json
 ```
 
-It exits 0 when every flow finished and 1 when one threw, timed out or reached no screen.
-`--config <file>` and `--out <dir>` change where it reads and writes.
+It exits 1 when cancel took more screens or clicks than sign-up ("cancel took 5 screens,
+sign-up took 3"), or a flow threw, timed out or reached no screen, and 0 otherwise.
+`--config <file>` and `--out <dir>` change where it reads and writes. Inside
+`@playwright/test`, `expect(report).toHaveCancelParity()` applies the same rule; see
+[docs/parity.md](docs/parity.md).
 
 ## 🧑‍💻 Quick start (for contributors)
 
@@ -109,7 +120,7 @@ numbers, and won't run under Cypress. The full list is in the [spec](docs/produc
 | Section | What's inside |
 |:---|:---|
 | [**📚 docs/**](docs/README.md) | The roadmap, changelog, product spec, build plan and ADRs. |
-| [**🧩 src/**](src/README.md) | The CLI and the instrumented runner. |
+| [**🧩 src/**](src/README.md) | The CLI, the instrumented runner, the comparison and the matcher. |
 | [**🌐 site/**](site/index.html) | The demo page GitHub Pages will serve. A "coming soon" shell for now. |
 | [**🔒 SECURITY.md**](SECURITY.md) | How to report a vulnerability. |
 
