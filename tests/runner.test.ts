@@ -170,7 +170,7 @@ test("cancel-parity run writes the report, and a typed secret never reaches it o
   const code = await run(["run", "--out", "report"], { out: (s) => (out += s), err: (s) => (err += s), cwd: dir });
   delete process.env.CANCEL_PARITY_TEST_SECRET;
   assert.equal(code, 0, err);
-  assert.match(out, /signup: 2 screens, 2 clicks, 2 typed fields, 1 dialogs/);
+  assert.match(out, /signup: 2 screens, 2 clicks, 2 typed fields, 1 dialog/);
 
   const json = readFileSync(join(dir, "report", "report.json"), "utf8");
   const report = JSON.parse(json);

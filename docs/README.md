@@ -26,6 +26,7 @@
 | Document | What's inside |
 |:---|:---|
 | [**📏 screens.md**](screens.md) | What counts as a screen, a click, a typed field and a dialog, and what the runner keeps out of the report. |
+| [**⚖️ parity.md**](parity.md) | How sign-up and cancel are compared: the rule, the tolerance, payment screens, and the `toHaveCancelParity()` matcher. |
 
 ## 📦 Product and decisions
 

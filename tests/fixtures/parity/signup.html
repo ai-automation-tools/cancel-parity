@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>StreamFlix: sign up</title></head>
+<body>
+  <main>
+    <h1>Join StreamFlix</h1>
+    <form id="form" method="post">
+      <label>Email <input name="email" type="email"></label>
+      <button type="submit">Continue to payment</button>
+    </form>
+  </main>
+  <script>
+    // The test passes the sandbox payment page's address, on another origin.
+    document.getElementById("form").action = new URLSearchParams(location.search).get("pay");
+  </script>
+</body>
+</html>

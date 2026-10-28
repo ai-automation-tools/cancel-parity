@@ -1,8 +1,9 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { count, describeMetric, METRICS, type Comparison } from "./compare.ts";
 import { ConfigError, loadConfig } from "./config.ts";
-import { runFlows, VIEWPORT } from "./runner.ts";
+import { cancelParity, version } from "./parity.ts";
+import type { Totals } from "./runner.ts";
 
 export interface Context {
   out: (s: string) => void;
@@ -14,11 +15,14 @@ const HELP = `cancel-parity: compares a sign-up flow with a cancel flow.
 
 Usage:
   cancel-parity run [--config <file>] [--out <dir>]
-      Run every flow in the config and write <dir>/report.json.
+      Run every flow in the config, compare the flows named signup and
+      cancel, and write <dir>/report.json.
       --config  Defaults to cancel-parity.config.ts, .js or .mjs in this folder.
       --out     Defaults to cancel-parity-report.
-      Exits 0 when every flow finished, 1 when one threw, timed out or
-      reached no screen, and 2 when the config can't be used.
+      Exits 1 when cancel took more than sign-up plus the config's
+      tolerance on a compared metric (screens and clicks by default), or a
+      flow threw, timed out or reached no screen; 2 when the config can't
+      be used; 0 otherwise.
   cancel-parity --help     Show this help
   cancel-parity --version  Print the version
 `;
@@ -27,10 +31,6 @@ const defaultContext: Context = {
   out: (s) => process.stdout.write(s),
   err: (s) => process.stderr.write(s),
 };
-
-function version(): string {
-  return JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
-}
 
 export async function run(argv: string[], ctx: Context = defaultContext): Promise<number> {
   const [cmd, ...rest] = argv;
@@ -64,24 +64,42 @@ async function runCommand(args: string[], ctx: Context): Promise<number> {
     return 2;
   }
   const outDir = resolve(cwd, opts.out ?? "cancel-parity-report");
-  mkdirSync(outDir, { recursive: true });
-  const flows = await runFlows(config, outDir);
-  const report = { tool: "cancel-parity", version: version(), viewport: VIEWPORT, flows };
-  const file = join(outDir, "report.json");
-  writeFileSync(file, JSON.stringify(report, null, 2) + "\n");
+  const report = await cancelParity(config, { outDir });
 
   let code = 0;
-  for (const [name, r] of Object.entries(flows)) {
-    const t = r.totals;
-    const counts = `${t.screens} screens, ${t.clicks} clicks, ${t.typedFields} typed fields, ${t.dialogs} dialogs`;
+  for (const [name, r] of Object.entries(report.flows)) {
+    const counts = summary(r.totals);
+    const without =
+      name === "signup" && report.comparison?.signup.paymentScreens.length
+        ? ` (without payment: ${summary(report.comparison.signup.withoutPayment)})`
+        : "";
     if (r.status === "ok") {
-      ctx.out(`${name}: ${counts}\n`);
+      ctx.out(`${name}: ${counts}${without}\n`);
     } else {
       code = 1;
       const why = r.status === "empty" ? "the flow reached no screen" : r.error;
       ctx.err(`${name}: ${r.status} (${why}). Recorded so far: ${counts}\n`);
     }
   }
-  ctx.out(`Report: ${file}\n`);
+  if (report.comparison) {
+    if (!report.comparison.pass) code = 1;
+    parity(report.comparison, ctx);
+  } else {
+    ctx.out("No comparison: name one flow `signup` and one `cancel` in the config to compare them.\n");
+  }
+  ctx.out(`Report: ${join(outDir, "report.json")}\n`);
   return code;
+}
+
+function summary(t: Totals): string {
+  return METRICS.map((m) => count(t[m], m)).join(", ");
+}
+
+function parity(c: Comparison, ctx: Context): void {
+  if (c.pass) {
+    const lines = c.metrics.filter((m) => m.tolerance !== null).map((m) => `  ${describeMetric(m)}\n`);
+    ctx.out(`Parity holds: cancel is within tolerance of sign-up.\n${lines.join("")}`);
+  } else {
+    ctx.err(`Parity fails:\n${c.failures.map((f) => `  ${f}\n`).join("")}`);
+  }
 }

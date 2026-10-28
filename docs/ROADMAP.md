@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/now-slice_1:_parity-F59E0B?style=for-the-badge" alt="Now: Slice 1, parity">
+  <img src="https://img.shields.io/badge/now-slice_2:_checks-F59E0B?style=for-the-badge" alt="Now: Slice 2, checks">
   <img src="https://img.shields.io/badge/stage-incubating-2ea44f?style=for-the-badge" alt="Stage: incubating">
   <a href="README.md"><img src="https://img.shields.io/badge/↩-docs_home-6B7280?style=for-the-badge" alt="Back to docs"></a>
 </p>
@@ -34,7 +34,7 @@ flows this repo owns. No item needs a real company's site or a real account.
 
 ## ⚖️ Slice 1: Parity comparison
 
-- [ ] **Slice 1: parity comparison.** One config names a sign-up flow and a cancel flow; both run and are compared per metric with a configurable tolerance (default `0` on screens and clicks). The CLI exits 1 and names each failing metric with both values ("cancel took 6 screens, sign-up took 3"), and exits 0 otherwise. `expect(result).toHaveCancelParity()` applies the same rule inside `@playwright/test`. Sign-up totals are reported with and without payment screens. A fair fixture pair exits 0 and an unfair pair exits 1. No output uses the words compliant, non-compliant, legal, illegal or violation, enforced by a test ([ADR-002](decisions/adr-002-evidence-not-verdicts.md)).
+- [x] **Slice 1: parity comparison.** One config names a sign-up flow and a cancel flow; both run and are compared per metric with a configurable tolerance (default `0` on screens and clicks). The CLI exits 1 and names each failing metric with both values ("cancel took 6 screens, sign-up took 3"), and exits 0 otherwise. `expect(result).toHaveCancelParity()` applies the same rule inside `@playwright/test`. Sign-up totals are reported with and without payment screens. A fair fixture pair exits 0 and an unfair pair exits 1. No output uses the words compliant, non-compliant, legal, illegal or violation, enforced by a test ([ADR-002](decisions/adr-002-evidence-not-verdicts.md)). — done 2026-10-28: the comparison in `src/compare.ts` (default tolerance 0 on screens and clicks, payment screens by origin or `paymentUrls`), `cancelParity()` in `src/parity.ts`, the CLI exit and messages in `src/run.ts`, `toHaveCancelParity()` in `src/matchers.ts` with a spec run through `@playwright/test`; fair and unfair StreamFlix fixture pairs under `tests/fixtures/parity/`, a throwing-flow case and the verdict-word test in `tests/parity.test.ts`; the rule in `docs/parity.md`
 
 ## 🔍 Slice 2: Per-screen checks
 
