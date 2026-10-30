@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/now-slice_2:_checks-F59E0B?style=for-the-badge" alt="Now: Slice 2, checks">
+  <img src="https://img.shields.io/badge/now-public_release-F59E0B?style=for-the-badge" alt="Now: Public release">
   <img src="https://img.shields.io/badge/stage-incubating-2ea44f?style=for-the-badge" alt="Stage: incubating">
   <a href="README.md"><img src="https://img.shields.io/badge/↩-docs_home-6B7280?style=for-the-badge" alt="Back to docs"></a>
 </p>
@@ -38,7 +38,7 @@ flows this repo owns. No item needs a real company's site or a real account.
 
 ## 🔍 Slice 2: Per-screen checks
 
-- [ ] **Slice 2: the six checks.** Port the six exit-friction heuristics (retention offer, guilt copy, phone-only cancel, a pre-checked "keep my plan" box, a cancel control at 11px or smaller, a countdown timer) as plain DOM code run through `page.evaluate()` on every screen of both flows. Phone-only cancellation fails by default; the other five warn, and each severity is configurable. An unfair fixture screen makes each check fire, and none fires anywhere on the fair flow. The check code stays runner-free (pure functions over the page), the seam [ADR-001](decisions/adr-001-playwright-typescript-npm.md) keeps for a second runner later.
+- [x] **Slice 2: the six checks.** Port the six exit-friction heuristics (retention offer, guilt copy, phone-only cancel, a pre-checked "keep my plan" box, a cancel control at 11px or smaller, a countdown timer) as plain DOM code run through `page.evaluate()` on every screen of both flows. Phone-only cancellation fails by default; the other five warn, and each severity is configurable. An unfair fixture screen makes each check fire, and none fires anywhere on the fair flow. The check code stays runner-free (pure functions over the page), the seam [ADR-001](decisions/adr-001-playwright-typescript-npm.md) keeps for a second runner later. — done 2026-10-30: `scanPage()` in `src/checks.ts` (plain DOM code the runner runs in the page with every content report, also callable as `page.evaluate(scanPage)`), findings per screen in `report.json` and the CLI output, `checks` severities in the config (phone-only fails, the rest warn), fail findings in the comparison and the matcher; a fair and an unfair screen per check plus the StreamFlix pair (each check fires on its unfair cancel screen, none on sign-up or the fair cancel) in `tests/checks.test.ts`; the rules in `docs/checks.md`
 
 ## 🚦 Public release
 

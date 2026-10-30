@@ -7,6 +7,11 @@ import type { Page } from "@playwright/test";
 // sandbox payment page on the second origin, so 2 screens, 1 click and 1 typed
 // field without it. Fair cancel: 3 screens, 2 clicks. Unfair cancel: 5 screens,
 // 4 clicks, 1 typed field (a retention offer and an exit survey on the way).
+//
+// Checks: none fires on sign-up or the fair cancel flow. On the unfair one,
+// screen 1 has an 11px cancel link, screen 2 a retention offer and a
+// countdown, screen 3 guilt copy, a phone number with no way to cancel on
+// that screen, and a pre-checked "keep my plan" box.
 
 export function signupFlow(site: string, pay: string) {
   const payUrl = `${pay}xorigin/pay.html?return=${encodeURIComponent(`${site}parity/welcome.html`)}`;

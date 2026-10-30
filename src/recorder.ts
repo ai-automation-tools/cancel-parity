@@ -2,6 +2,8 @@
 // Playwright and no DOM, so a second runner can feed it later (ADR-001).
 // The rules are written up in docs/screens.md.
 
+import type { Finding } from "./checks.ts";
+
 export interface Screen {
   /** Origin and path only: query strings and fragments can carry tokens. */
   url: string;
@@ -10,6 +12,8 @@ export interface Screen {
   dialogs: number;
   /** Path relative to the output folder, or null if the screen was left before it could be captured. */
   screenshot: string | null;
+  /** Checks that fired on this screen, at most one per check (docs/checks.md). */
+  findings: Finding[];
 }
 
 /** Share of words that differ between two texts: 0 is identical, 1 shares nothing. */
@@ -104,6 +108,12 @@ export class Recorder {
     this.act().dialogs++;
   }
 
+  /** A check fired on the page. Kept on the current screen once per check. */
+  found(f: Finding): void {
+    const s = this.current;
+    if (s && !s.findings.some((x) => x.check === f.check)) s.findings.push(f);
+  }
+
   private act(): Screen {
     this.acted = true;
     // Events before the first screen (there shouldn't be any) land on a placeholder.
@@ -111,7 +121,7 @@ export class Recorder {
   }
 
   private start(url: string): Screen {
-    const screen: Screen = { url: displayUrl(url), clicks: 0, typedFields: 0, dialogs: 0, screenshot: null };
+    const screen: Screen = { url: displayUrl(url), clicks: 0, typedFields: 0, dialogs: 0, screenshot: null, findings: [] };
     this.screens.push(screen);
     this.acted = false;
     return screen;

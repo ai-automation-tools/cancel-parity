@@ -1,5 +1,6 @@
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { describeFinding } from "./checks.ts";
 import { count, describeMetric, METRICS, type Comparison } from "./compare.ts";
 import { ConfigError, loadConfig } from "./config.ts";
 import { cancelParity, version } from "./parity.ts";
@@ -20,9 +21,10 @@ Usage:
       --config  Defaults to cancel-parity.config.ts, .js or .mjs in this folder.
       --out     Defaults to cancel-parity-report.
       Exits 1 when cancel took more than sign-up plus the config's
-      tolerance on a compared metric (screens and clicks by default), or a
-      flow threw, timed out or reached no screen; 2 when the config can't
-      be used; 0 otherwise.
+      tolerance on a compared metric (screens and clicks by default), a
+      check set to "fail" fired on a screen (phone-only cancel by default),
+      or a flow threw, timed out or reached no screen; 2 when the config
+      can't be used; 0 otherwise.
   cancel-parity --help     Show this help
   cancel-parity --version  Print the version
 `;
@@ -80,6 +82,12 @@ async function runCommand(args: string[], ctx: Context): Promise<number> {
       const why = r.status === "empty" ? "the flow reached no screen" : r.error;
       ctx.err(`${name}: ${r.status} (${why}). Recorded so far: ${counts}\n`);
     }
+    r.screens.forEach((s, i) =>
+      s.findings.forEach((f) => {
+        if (f.severity === "fail") code = 1;
+        ctx.out(`  ${f.severity}: ${describeFinding(i + 1, f)}\n`);
+      }),
+    );
   }
   if (report.comparison) {
     if (!report.comparison.pass) code = 1;

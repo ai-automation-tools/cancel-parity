@@ -48,6 +48,10 @@ export default {
 A flow that throws, times out or reaches no screen never passes the comparison, whatever its
 counts. Its partial counts are still in the report.
 
+A check set to `fail` that fired on a screen of either flow fails the comparison too, with a
+line such as `cancel screen 3: phone-only cancel: "Call our retention team on 1-800-555-0100."`.
+By default only phone-only cancel fails; see [checks.md](checks.md).
+
 ## Payment screens
 
 Sign-up often passes through a payment page, which makes sign-up longer and parity easier
@@ -73,12 +77,17 @@ then the result:
 ```
 signup: 3 screens, 2 clicks, 2 typed fields, 0 dialogs (without payment: 2 screens, 1 click, 1 typed field, 0 dialogs)
 cancel: 5 screens, 4 clicks, 1 typed field, 0 dialogs
+  warn: screen 1: cancel control at 11px or smaller: "Cancel plan"
+  ...
+  fail: screen 3: phone-only cancel: "Prefer to talk it over? Call our retention team on 1-800-555-0100."
 Parity fails:
   cancel took 5 screens, sign-up took 3
   cancel took 4 clicks, sign-up took 2
+  cancel screen 3: phone-only cancel: "Prefer to talk it over? Call our retention team on 1-800-555-0100."
 ```
 
-It exits 1 when parity fails, 0 when it holds. `report.json` carries the same result under
+Each flow's findings follow its totals ([checks.md](checks.md)). It exits 1 when parity
+fails, 0 when it holds. `report.json` carries the same result under
 `comparison`: `pass`, `failures`, every metric with both values and its tolerance (`null`
 when not compared), and sign-up's totals with and without payment.
 

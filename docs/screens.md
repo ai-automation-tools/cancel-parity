@@ -47,7 +47,8 @@ started with.
 | **Dialogs** | Browser `alert`, `confirm` and `prompt` dialogs. The runner accepts them unless the flow's own handler answers first. | In-page modals. They count as a screen if they replace most of the main landmark. |
 
 Each count belongs to the screen that was showing when it happened. The report lists every
-screen with its own counts and the flow's totals.
+screen with its own counts, the checks that fired on it ([checks.md](checks.md)), and the
+flow's totals.
 
 ## Screenshots
 
