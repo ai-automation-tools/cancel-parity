@@ -38,7 +38,7 @@ const tmp = () => mkdtempSync(join(tmpdir(), "cancel-parity-parity-"));
 
 // A finished flow made of screens given as [url, clicks, typedFields, dialogs].
 function flow(...rows: [string, number, number, number][]): FlowResult {
-  const screens: Screen[] = rows.map(([url, clicks, typedFields, dialogs]) => ({ url, clicks, typedFields, dialogs, screenshot: null }));
+  const screens: Screen[] = rows.map(([url, clicks, typedFields, dialogs]) => ({ url, clicks, typedFields, dialogs, screenshot: null, findings: [] }));
   const sum = (k: "clicks" | "typedFields" | "dialogs") => screens.reduce((n, s) => n + s[k], 0);
   return {
     status: "ok",
@@ -124,7 +124,11 @@ test("fixture pairs: the fair cancel flow passes and the unfair one fails with b
 
   const unfair = await cancelParity({ flows: { signup, cancel: unfairCancelFlow(site.url) } }, { outDir: tmp(), browser });
   assert.deepEqual(unfair.flows.cancel.totals, { screens: 5, clicks: 4, typedFields: 1, dialogs: 0 });
-  assert.deepEqual(unfair.comparison?.failures, ["cancel took 5 screens, sign-up took 3", "cancel took 4 clicks, sign-up took 2"]);
+  assert.deepEqual(unfair.comparison?.failures, [
+    "cancel took 5 screens, sign-up took 3",
+    "cancel took 4 clicks, sign-up took 2",
+    'cancel screen 3: phone-only cancel: "Prefer to talk it over? Call our retention team on 1-800-555-0100."',
+  ]);
   const m = toHaveCancelParity(unfair);
   assert.equal(m.pass, false);
   assert.match(m.message(), /cancel took 5 screens, sign-up took 3/);
@@ -170,7 +174,14 @@ test("cancel-parity run exits 0 on the fair pair and 1 on the unfair pair, namin
   const unfair = await cli("unfairCancelFlow");
   assert.equal(unfair.code, 1);
   assert.match(unfair.out, /cancel: 5 screens, 4 clicks, 1 typed field, 0 dialogs/);
-  assert.equal(unfair.err, "Parity fails:\n  cancel took 5 screens, sign-up took 3\n  cancel took 4 clicks, sign-up took 2\n");
+  assert.equal(
+    unfair.err,
+    "Parity fails:\n  cancel took 5 screens, sign-up took 3\n  cancel took 4 clicks, sign-up took 2\n" +
+      '  cancel screen 3: phone-only cancel: "Prefer to talk it over? Call our retention team on 1-800-555-0100."\n',
+  );
+  assert.match(unfair.out, / {2}warn: screen 1: cancel control at 11px or smaller: "Cancel plan"\n/);
+  assert.match(unfair.out, / {2}fail: screen 3: phone-only cancel: /);
+  assert.doesNotMatch(fair.out, /warn:|fail:/);
   assert.equal(JSON.parse(unfair.json).comparison.pass, false);
 });
 

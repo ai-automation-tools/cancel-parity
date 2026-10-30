@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { Page } from "@playwright/test";
+import { checkSeverities, type CheckSeverity } from "./checks.ts";
 import { checkTolerance, type Tolerance } from "./compare.ts";
 
 /** One user journey, written or recorded with `npx playwright codegen` against your own app. */
@@ -23,6 +24,8 @@ export interface Config {
   tolerance?: Tolerance;
   /** Sign-up screens whose URL contains one of these, or matches one of these patterns, are payment screens. Default: screens on another origin. */
   paymentUrls?: (string | RegExp)[];
+  /** Severity per check: "fail", "warn" or "off". Default: `phone-only` fails, the other five warn. */
+  checks?: CheckSeverity;
 }
 
 export const DEFAULT_CONFIG_FILES = ["cancel-parity.config.ts", "cancel-parity.config.js", "cancel-parity.config.mjs"];
@@ -52,6 +55,8 @@ export function checkConfig(value: unknown): Config {
   if (t !== undefined && !(t > 0 && t <= 1)) throw new ConfigError("`screenChangeThreshold` must be above 0 and at most 1.");
   const tol = checkTolerance(c.tolerance);
   if (tol) throw new ConfigError(tol);
+  const sev = checkSeverities(c.checks);
+  if (sev) throw new ConfigError(sev);
   const p = c.paymentUrls;
   if (p !== undefined && !(Array.isArray(p) && p.every((x) => typeof x === "string" || x instanceof RegExp))) {
     throw new ConfigError("`paymentUrls` must be a list of strings or regular expressions.");

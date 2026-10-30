@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { chromium, type Browser, type Page } from "@playwright/test";
+import { scanPage, severityOf, type RawFinding } from "./checks.ts";
 import type { Config, Flow } from "./config.ts";
 import { Recorder, type Screen } from "./recorder.ts";
 
@@ -28,13 +29,14 @@ export interface FlowResult {
 }
 
 /** What the page tells the runner. Never carries what was typed. */
-type PageEvent = { kind: "click" | "type" | "key" } | { kind: "content"; text: string };
+type PageEvent = { kind: "click" | "type" | "key" } | { kind: "content"; text: string; findings: RawFinding[] };
 
 /**
- * Runs inside every frame of the page before its own scripts. Plain DOM code,
- * serialized by Playwright, so it must not reference anything outside itself.
+ * Runs inside every frame of the page before its own scripts, given `scanPage`.
+ * Plain DOM code, serialized into the page, so it must not reference anything
+ * outside itself.
  */
-function instrument(): void {
+function instrument(scan: typeof scanPage): void {
   const send = (e: PageEvent) => {
     try {
       (window as unknown as { __cancelParity: (e: PageEvent) => void }).__cancelParity(e);
@@ -62,9 +64,13 @@ function instrument(): void {
   );
   if (window !== window.top) return;
   const mainText = () => (document.querySelector("main, [role=main]") as HTMLElement | null ?? document.body)?.innerText ?? "";
+  // The checks run with every content report, so each screen is scanned in the
+  // state it is in, before the flow moves on.
+  const report = () => send({ kind: "content", text: mainText(), findings: scan() });
+  addEventListener("load", report); // again once stylesheets have applied, for the font-size check
   addEventListener("DOMContentLoaded", () => {
-    send({ kind: "content", text: mainText() });
-    new MutationObserver(() => send({ kind: "content", text: mainText() })).observe(document.documentElement, {
+    report();
+    new MutationObserver(report).observe(document.documentElement, {
       subtree: true,
       childList: true,
       characterData: true,
@@ -114,10 +120,14 @@ export async function runFlow(
     else if (e.kind === "key") rec.key();
     else if (e.kind === "content") {
       rec.content(e.text);
+      for (const f of e.findings) {
+        const severity = severityOf(f.check, config.checks);
+        if (severity !== "off") rec.found({ ...f, severity });
+      }
       shoot(rec.current); // no-op once the screen has its shot
     }
   });
-  await page.addInitScript(instrument);
+  await page.addInitScript(`(${instrument})(${scanPage})`);
   page.on("framenavigated", (frame) => {
     if (frame === page.mainFrame()) rec.navigated(frame.url());
   });

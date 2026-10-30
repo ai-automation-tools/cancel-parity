@@ -33,10 +33,10 @@
 ---
 
 > [!WARNING]
-> **The runner and the comparison work; the six checks and the HTML report don't yet.**
-> `cancel-parity run` runs your sign-up and cancel flows, compares them and exits 1 when
-> cancel is harder. The per-screen checks and the HTML report land one roadmap slice at a
-> time. See the [roadmap](docs/ROADMAP.md).
+> **The runner, the comparison and the six checks work; the HTML report doesn't yet.**
+> `cancel-parity run` runs your sign-up and cancel flows, checks every screen, compares the
+> flows and exits 1 when cancel is harder. It writes JSON only until the HTML report and the
+> live demo land. See the [roadmap](docs/ROADMAP.md).
 
 ## 💡 What it's for
 
@@ -59,7 +59,7 @@ It only drives the browser your functions drive. No crawler, no telemetry, no ac
 |:---|:---|
 | **Instrumented runner** | Works. `cancel-parity run` counts screens, clicks, typed fields and dialogs for each flow, with a masked screenshot per screen. What counts as a screen: [docs/screens.md](docs/screens.md). |
 | **Parity comparison** | Works. Exit 1, or a failing `expect(report).toHaveCancelParity()`, when cancel takes more screens or clicks than sign-up, with a configurable tolerance. Sign-up is reported with and without payment screens. The rule: [docs/parity.md](docs/parity.md). |
-| **Six per-screen checks** | Planned (Slice 2). Retention offers, guilt copy, phone-only cancel, pre-checked keep boxes, tiny cancel links, countdowns. |
+| **Six per-screen checks** | Works. Retention offers, guilt copy, phone-only cancel, pre-checked keep boxes, cancel links at 11px or smaller, countdowns, on every screen of both flows. Phone-only cancel fails by default and the rest warn; each is configurable. The rules: [docs/checks.md](docs/checks.md). |
 | **HTML report and live demo** | Planned (Slice 3). A fair and an unfair mock flow, with the reports CI produced. |
 
 ## 🚀 Run your flows
@@ -72,6 +72,7 @@ named `signup` and `cancel` are compared:
 export default {
   baseURL: process.env.CANCEL_PARITY_BASE_URL, // your staging app, from .env
   tolerance: { screens: 0, clicks: 0 },         // the default
+  checks: { "guilt-copy": "fail" },             // phone-only fails by default, the rest warn
   flows: {
     signup: async (page) => {
       await page.goto("/join");
@@ -92,7 +93,8 @@ node path/to/cancel-parity/dist/cli.js run   # writes cancel-parity-report/repor
 ```
 
 It exits 1 when cancel took more screens or clicks than sign-up ("cancel took 5 screens,
-sign-up took 3"), or a flow threw, timed out or reached no screen, and 0 otherwise.
+sign-up took 3"), a check set to `fail` fired on a screen (phone-only cancel by default), or
+a flow threw, timed out or reached no screen, and 0 otherwise.
 `--config <file>` and `--out <dir>` change where it reads and writes. Inside
 `@playwright/test`, `expect(report).toHaveCancelParity()` applies the same rule; see
 [docs/parity.md](docs/parity.md).
@@ -120,7 +122,7 @@ numbers, and won't run under Cypress. The full list is in the [spec](docs/produc
 | Section | What's inside |
 |:---|:---|
 | [**📚 docs/**](docs/README.md) | The roadmap, changelog, product spec, build plan and ADRs. |
-| [**🧩 src/**](src/README.md) | The CLI, the instrumented runner, the comparison and the matcher. |
+| [**🧩 src/**](src/README.md) | The CLI, the instrumented runner, the six checks, the comparison and the matcher. |
 | [**🌐 site/**](site/index.html) | The demo page GitHub Pages will serve. A "coming soon" shell for now. |
 | [**🔒 SECURITY.md**](SECURITY.md) | How to report a vulnerability. |
 

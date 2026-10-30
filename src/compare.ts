@@ -3,6 +3,7 @@
 // written up in docs/parity.md. Every message here is evidence, never a
 // verdict (ADR-002).
 
+import { findingFailures } from "./checks.ts";
 import type { FlowResult, Totals } from "./runner.ts";
 
 export const METRICS = ["screens", "clicks", "typedFields", "dialogs"] as const;
@@ -33,9 +34,12 @@ export interface MetricResult {
 }
 
 export interface Comparison {
-  /** True when both flows finished and cancel took no more than sign-up plus the tolerance on every compared metric. */
+  /**
+   * True when both flows finished, cancel took no more than sign-up plus the
+   * tolerance on every compared metric, and no check fired at "fail" on either flow.
+   */
   pass: boolean;
-  /** One line per reason it didn't pass, such as "cancel took 5 screens, sign-up took 3". */
+  /** One line per reason it didn't pass, such as "cancel took 5 screens, sign-up took 3" or 'cancel screen 3: phone-only cancel: "..."'. */
   failures: string[];
   metrics: MetricResult[];
   signup: {
@@ -105,6 +109,7 @@ export function compareFlows(signup: FlowResult, cancel: FlowResult, opts: Compa
 
   const failures = [stopped("sign-up", signup), stopped("cancel", cancel)].filter((s): s is string => s !== null);
   for (const m of metrics) if (!m.pass) failures.push(describeMetric(m));
+  failures.push(...findingFailures("sign-up", signup.screens), ...findingFailures("cancel", cancel.screens));
 
   return {
     pass: failures.length === 0,
