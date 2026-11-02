@@ -209,3 +209,8 @@ test("reports carry ADR-002's wording, and no output or source message gives a v
     assert.doesNotMatch(src, VERDICT_WORDS, file);
   }
 });
+
+test("the README carries ADR-002's wording word for word", () => {
+  const readme = readFileSync(join(import.meta.dirname, "..", "README.md"), "utf8").replace(/\s+/g, " ");
+  assert.ok(readme.includes(CLAIMS_BOUNDARY));
+});
