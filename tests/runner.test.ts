@@ -179,7 +179,9 @@ test("cancel-parity run writes the report, and a typed secret never reaches it o
     if (s.screenshot !== null) assert.ok(existsSync(join(dir, "report", s.screenshot)), s.screenshot);
   }
   assert.ok(report.flows.signup.screens.at(-1).screenshot, "the last screen always gets a screenshot");
-  assert.ok(!json.includes(SECRET) && !out.includes(SECRET) && !err.includes(SECRET));
+  const html = readFileSync(join(dir, "report", "report.html"), "utf8");
+  assert.match(html, /<h1>cancel-parity report<\/h1>/);
+  assert.ok(!json.includes(SECRET) && !html.includes(SECRET) && !out.includes(SECRET) && !err.includes(SECRET));
 });
 
 test("cancel-parity run exits 1 when a flow fails and 2 when the config is unusable", async () => {

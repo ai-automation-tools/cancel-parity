@@ -43,7 +43,10 @@ Full spec: `docs/product/spec.md`. Slice order: `docs/product/build-plan.md`. De
 - The six checks are plain DOM code run through `page.evaluate()`. Keep metric and check code
   free of Playwright types where you can (pure functions over captured page data): ADR-001's
   seam for adding a second runner later.
-- The demo lives in `site/`. GitHub Pages is not enabled yet; the live-demo item adds the
+- The demo lives in `site/`: the page, and the mock StreamFlix site under `site/streamflix/`
+  (one sign-up flow, a fair and an unfair cancel flow). `npm run demo` (`scripts/demo.ts`)
+  serves it locally, runs both pairs and writes their reports to `site/reports/` (gitignored);
+  `tests/demo.test.ts` pins the outcome. GitHub Pages is not enabled yet; the live-demo item adds the
   `actions/deploy-pages` workflow. Until then, don't add a Pages workflow, or CI on `main`
   goes red.
 

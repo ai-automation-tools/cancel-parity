@@ -24,7 +24,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "node --test",
-    "lint": "eslint . && tsc --noEmit"
+    "lint": "eslint . && tsc --noEmit",
+    "demo": "node scripts/demo.ts"
   },
   "peerDependencies": {
     "@playwright/test": ">=1.40"

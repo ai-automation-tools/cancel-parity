@@ -33,10 +33,11 @@
 ---
 
 > [!WARNING]
-> **The runner, the comparison and the six checks work; the HTML report doesn't yet.**
+> **Everything works except the live demo, which isn't online yet.**
 > `cancel-parity run` runs your sign-up and cancel flows, checks every screen, compares the
-> flows and exits 1 when cancel is harder. It writes JSON only until the HTML report and the
-> live demo land. See the [roadmap](docs/ROADMAP.md).
+> flows, writes an HTML and a JSON report and exits 1 when cancel is harder. The demo site and
+> its reports build locally with `npm run demo`; publishing them to GitHub Pages is next. See
+> the [roadmap](docs/ROADMAP.md).
 
 ## 💡 What it's for
 
@@ -48,8 +49,8 @@ enrolling. Virginia's says at least as easy. Nobody's test suite checks it.
 cancel-parity is that check. You give it two Playwright functions against your own staging
 app, one that signs a test user up and one that cancels. It runs both, counts the screens,
 clicks, typed fields and dialogs each took, and scans every screen for six retention
-patterns regulators have objected to. Then it compares the two flows, writes a JSON report
-(an HTML one is coming in Slice 3), and exits non-zero when cancel is harder than sign-up by
+patterns regulators have objected to. Then it compares the two flows, writes an HTML report
+and a JSON one, and exits non-zero when cancel is harder than sign-up by
 more than you allow.
 
 It only drives the browser your functions drive. No crawler, no telemetry, no account.
@@ -61,7 +62,8 @@ It only drives the browser your functions drive. No crawler, no telemetry, no ac
 | **Instrumented runner** | Works. `cancel-parity run` counts screens, clicks, typed fields and dialogs for each flow, with a masked screenshot per screen. What counts as a screen: [docs/screens.md](docs/screens.md). |
 | **Parity comparison** | Works. Exit 1, or a failing `expect(report).toHaveCancelParity()`, when cancel takes more screens or clicks than sign-up, with a configurable tolerance. Sign-up is reported with and without payment screens. The rule: [docs/parity.md](docs/parity.md). |
 | **Six per-screen checks** | Works. Retention offers, guilt copy, phone-only cancel, pre-checked keep boxes, cancel links at 11px or smaller, countdowns, on every screen of both flows. Phone-only cancel fails by default and the rest warn; each is configurable. The rules: [docs/checks.md](docs/checks.md). |
-| **HTML report and live demo** | Planned (Slice 3). A fair and an unfair mock flow, with the reports CI produced. |
+| **HTML report** | Works. `report.html` is one self-contained file: both flows' metrics side by side, each screen's findings and screenshot, and a coverage block saying which flows ran, at what viewport, and what wasn't observable. |
+| **Live demo** | Planned. The mock StreamFlix site in `site/`, a fair and an unfair cancel flow, and their reports (`npm run demo` builds them) go on GitHub Pages next. |
 
 ## 🚀 Run your flows
 
@@ -119,7 +121,8 @@ npx cancel-parity --version                 # or -v
 ```
 
 `run` prints each flow's totals and findings, then the comparison, and writes
-`report.json` plus a masked screenshot per screen to the `--out` folder. It exits:
+`report.html` (one file, screenshots embedded, readable offline), `report.json` and a masked
+screenshot per screen to the `--out` folder. It exits:
 
 - **1** when cancel took more screens or clicks than sign-up plus the tolerance ("cancel took
   4 screens, sign-up took 2 (tolerance 1)"), a check set to `fail` fired on a screen
@@ -137,6 +140,7 @@ npm ci                                   # install dependencies
 npx playwright install chromium          # the browser the slices test with
 npm run lint && npm test && npm run build
 node dist/cli.js --help
+npm run demo                             # builds the demo's two reports into site/reports/
 ```
 
 ## ⚠️ What it is not
@@ -167,7 +171,7 @@ The reasons are in the [spec](docs/product/spec.md).
 |:---|:---|
 | [**📚 docs/**](docs/README.md) | The roadmap, changelog, product spec, build plan and ADRs. |
 | [**🧩 src/**](src/README.md) | The CLI, the instrumented runner, the six checks, the comparison and the matcher. |
-| [**🌐 site/**](site/index.html) | The demo page GitHub Pages will serve. A "coming soon" shell for now. |
+| [**🌐 site/**](site/index.html) | The demo page GitHub Pages will serve, and the mock StreamFlix site with a fair and an unfair cancel flow. |
 | [**🔒 SECURITY.md**](SECURITY.md) | How to report a vulnerability. |
 
 ---

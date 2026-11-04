@@ -17,7 +17,7 @@ const HELP = `cancel-parity: compares a sign-up flow with a cancel flow.
 Usage:
   cancel-parity run [--config <file>] [--out <dir>]
       Run every flow in the config, compare the flows named signup and
-      cancel, and write <dir>/report.json.
+      cancel, and write <dir>/report.json and <dir>/report.html.
       --config  Defaults to cancel-parity.config.ts, .js or .mjs in this folder.
       --out     Defaults to cancel-parity-report.
       Exits 1 when cancel took more than sign-up plus the config's
@@ -95,7 +95,7 @@ async function runCommand(args: string[], ctx: Context): Promise<number> {
   } else {
     ctx.out("No comparison: name one flow `signup` and one `cancel` in the config to compare them.\n");
   }
-  ctx.out(`Report: ${join(outDir, "report.json")}\n`);
+  ctx.out(`Report: ${join(outDir, "report.html")} (data: report.json)\n`);
   return code;
 }
 
