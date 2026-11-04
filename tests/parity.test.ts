@@ -162,7 +162,8 @@ export default {
   let err = "";
   const code = await run(["run", "--out", "report"], { out: (s) => (out += s), err: (s) => (err += s), cwd: dir });
   const json = readFileSync(join(dir, "report", "report.json"), "utf8");
-  return { code, out, err, json };
+  const html = readFileSync(join(dir, "report", "report.html"), "utf8");
+  return { code, out, err, json, html };
 }
 
 test("cancel-parity run exits 0 on the fair pair and 1 on the unfair pair, naming each failing metric", async () => {
@@ -196,7 +197,8 @@ test("reports carry ADR-002's wording, and no output or source message gives a v
   const runs = [await cli("fairCancelFlow"), await cli("unfairCancelFlow"), await cli("throws")];
   for (const r of runs) {
     assert.equal(JSON.parse(r.json).notice, CLAIMS_BOUNDARY);
-    const text = [r.out, r.err, r.json].join("\n").replaceAll(CLAIMS_BOUNDARY, "");
+    assert.ok(r.html.includes(CLAIMS_BOUNDARY));
+    const text = [r.out, r.err, r.json, r.html].join("\n").replaceAll(CLAIMS_BOUNDARY, "");
     assert.doesNotMatch(text, VERDICT_WORDS);
   }
   let help = "";

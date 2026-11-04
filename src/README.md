@@ -14,7 +14,8 @@
 |:---|:---|
 | [**cli.ts**](cli.ts) | The `cancel-parity` bin entry. Loads `.env`, then hands the arguments to `run`. |
 | [**run.ts**](run.ts) | Parses the command line, runs `cancel-parity run`, prints each flow's totals and the parity result, and returns an exit code. Takes its output functions and working folder as arguments so tests can call it without a process. |
-| [**parity.ts**](parity.ts) | `cancelParity()`: runs the flows, compares `signup` with `cancel`, writes `report.json`. Holds ADR-002's wording. |
+| [**parity.ts**](parity.ts) | `cancelParity()`: runs the flows, compares `signup` with `cancel`, writes `report.json` and `report.html`. Holds ADR-002's wording. |
+| [**html.ts**](html.ts) | Renders a report as one self-contained HTML file: the parity result, metrics side by side, each screen's findings and screenshot (embedded), and the coverage block. No Playwright in it. |
 | [**compare.ts**](compare.ts) | The parity rule, tolerances and payment screens, and every message it prints. No Playwright in it ([ADR-001](../docs/decisions/adr-001-playwright-typescript-npm.md)). |
 | [**checks.ts**](checks.ts) | The six per-screen checks: `scanPage()`, plain DOM code the runner runs inside the page (or `page.evaluate(scanPage)` from any runner), their default severities and the messages for findings. No Playwright in it ([ADR-001](../docs/decisions/adr-001-playwright-typescript-npm.md)). |
 | [**matchers.ts**](matchers.ts) | `toHaveCancelParity()`, for `expect.extend()` in `@playwright/test`. |

@@ -3,11 +3,16 @@ import { readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import type { AddressInfo } from "node:net";
 
-const TYPES: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript" };
+const TYPES: Record<string, string> = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript",
+  ".css": "text/css",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+};
 
-/** Serves the fixture folder on 127.0.0.1 at a free port. Any method gets the file, so forms can POST. */
-export async function serve(): Promise<{ url: string; close: () => Promise<void> }> {
-  const root = import.meta.dirname;
+/** Serves a folder (the fixtures by default) on 127.0.0.1 at a free port. Any method gets the file, so forms can POST. */
+export async function serve(root = import.meta.dirname): Promise<{ url: string; close: () => Promise<void> }> {
   const server = createServer(async (req, res) => {
     req.resume();
     const path = new URL(req.url ?? "/", "http://x").pathname.slice(1);
