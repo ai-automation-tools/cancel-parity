@@ -13,7 +13,7 @@
 ---
 
 The Cancel-Parity Weekly Roadmap routine works this file top to bottom every Monday,
-Wednesday and Friday: it takes the first open item that isn't `🔒 Needs Mike` (or up to six
+Wednesday and Friday: it takes the first open item that isn't `🔒 Needs owner` (or up to six
 `small` ones), builds it, ticks it and opens a `roadmap/auto-<date>` PR. **Every item above
 `## After public release` is a release gate.** cancel-parity goes public when all of them are
 ticked and Mike says so. Ticking an item adds its line to the [changelog](CHANGELOG.md) and
@@ -21,7 +21,7 @@ updates any doc it made stale, in the same commit.
 
 Markers: `- [ ]` open, `- [-]` claimed by a run in progress, `- [x]` done, `- [!]` blocked
 (the reason follows on the line). `small` marks docs or config a run can batch, up to six
-per PR (untagged means a feature, one per run); `🔒 Needs Mike` marks one only Mike can do.
+per PR (untagged means a feature, one per run); `🔒 Needs owner` marks one only the owner can do.
 
 The slices come from [product/build-plan.md](product/build-plan.md), which marks Slices 0 to 3
 as the MVP. Slices 0 to 2 are the three features above the line; Slice 3 (the HTML report and
@@ -65,10 +65,10 @@ Nothing below blocks go-live.
 ### 📣 Publish and promote
 
 - [ ] `small` `CONTRIBUTING.md` saying how to run the tests and add a check with its fair and unfair fixtures.
-- [ ] `npm publish --dry-run` is clean, then tag v0.1 and publish to npm as `cancel-parity` (free as of 2026-10-25). 🔒 Needs Mike
-- [ ] Launch post built on the demo ("the test for 'as easy to cancel as to sign up'"), sent where front-end and growth engineers read. 🔒 Needs Mike
-- [ ] Custom subdomain `cancel-parity-demo.ai-automation-tools.dev`. 🔒 Needs Mike
-- [ ] 90 days after the repo goes public, run the stop test: fewer than 15 stars and no outside issue, PR or GitHub dependent means stop post-release work and park it; 3 or more outside users means build the slices above. 🔒 Needs Mike
+- [ ] `npm publish --dry-run` is clean, then tag v0.1 and publish to npm as `cancel-parity` (free as of 2026-10-25). 🔒 Needs owner
+- [ ] Launch post built on the demo ("the test for 'as easy to cancel as to sign up'"), sent where front-end and growth engineers read. 🔒 Needs owner
+- [ ] Custom subdomain `cancel-parity-demo.ai-automation-tools.dev`. 🔒 Needs owner
+- [ ] 90 days after the repo goes public, run the stop test: fewer than 15 stars and no outside issue, PR or GitHub dependent means stop post-release work and park it; 3 or more outside users means build the slices above. 🔒 Needs owner
 
 ---
 
