@@ -46,9 +46,10 @@ Full spec: `docs/product/spec.md`. Slice order: `docs/product/build-plan.md`. De
 - The demo lives in `site/`: the page, and the mock StreamFlix site under `site/streamflix/`
   (one sign-up flow, a fair and an unfair cancel flow). `npm run demo` (`scripts/demo.ts`)
   serves it locally, runs both pairs and writes their reports to `site/reports/` (gitignored);
-  `tests/demo.test.ts` pins the outcome. GitHub Pages is not enabled yet; the live-demo item adds the
-  `actions/deploy-pages` workflow. Until then, don't add a Pages workflow, or CI on `main`
-  goes red.
+  `tests/demo.test.ts` pins the outcome. `.github/workflows/pages.yml` runs `npm run demo` on
+  every push to `main` and publishes `site/` with both reports to GitHub Pages
+  (`https://ai-automation-tools.dev/cancel-parity/`). Keep every page path relative and never
+  add a `CNAME` file: the custom domain is set at graduation.
 
 ## Verify
 
