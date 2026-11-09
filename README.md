@@ -143,6 +143,9 @@ node dist/cli.js --help
 npm run demo                             # builds the demo's two reports into site/reports/
 ```
 
+How the tests are laid out and how to add a check with its fair and unfair fixtures:
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## ⚠️ What it is not
 
 cancel-parity measures how your sign-up and cancel flows compare and flags patterns
@@ -172,6 +175,7 @@ The reasons are in the [spec](docs/product/spec.md).
 | [**📚 docs/**](docs/README.md) | The roadmap, changelog, product spec, build plan and ADRs. |
 | [**🧩 src/**](src/README.md) | The CLI, the instrumented runner, the six checks, the comparison and the matcher. |
 | [**🌐 site/**](site/index.html) | The demo page GitHub Pages will serve, and the mock StreamFlix site with a fair and an unfair cancel flow. |
+| [**🤝 CONTRIBUTING.md**](CONTRIBUTING.md) | Running the tests, and adding a check with its fair and unfair fixtures. |
 | [**🔒 SECURITY.md**](SECURITY.md) | How to report a vulnerability. |
 
 ---

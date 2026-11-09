@@ -64,7 +64,7 @@ Nothing below blocks go-live.
 
 ### 📣 Publish and promote
 
-- [ ] `small` `CONTRIBUTING.md` saying how to run the tests and add a check with its fair and unfair fixtures.
+- [x] `small` `CONTRIBUTING.md` saying how to run the tests and add a check with its fair and unfair fixtures. — done 2026-11-09: `CONTRIBUTING.md` at the root covers setup and the three gates, the test layout (local fixtures, the matcher's `*.spec.ts` run), the six places a new check touches with its fair and unfair screens and the StreamFlix expectation, and PR rules; linked from the README's contributor quick start and docs table
 - [ ] `npm publish --dry-run` is clean, then tag v0.1 and publish to npm as `cancel-parity` (free as of 2026-10-25). 🔒 Needs owner
 - [ ] Launch post built on the demo ("the test for 'as easy to cancel as to sign up'"), sent where front-end and growth engineers read. 🔒 Needs owner
 - [ ] Custom subdomain `cancel-parity-demo.ai-automation-tools.dev`. 🔒 Needs owner
