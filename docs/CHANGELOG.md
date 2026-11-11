@@ -24,6 +24,8 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 - `cancel-parity run [--config <file>] [--out <dir>]` runs each flow in the config on an instrumented Chromium page and writes `report.json` with its screens, clicks, typed fields and dialogs, and a screenshot per screen with hidden-text inputs painted over. A flow that throws, times out or reaches no screen keeps what it recorded and makes the CLI exit 1. Fixture tests pin exact counts for a two-page site, an SPA and a cross-origin hop. *Slice 0: Instrumented runner*
 
 **Docs**
+- Roadmap rechecked against the org's 2026-11 requirements: the intro names the roadmap routine instead of its days; new release items for the README's Live Demo badge, the build stamp and an owner question on whether runner hardening is a gate; a runner-hardening item and a `minimatch` override at the top of the next slices.
+- The live demo is up at `https://ai-automation-tools.dev/cancel-parity/`, serving the page and both StreamFlix reports, since PR #7 merged on 2026-11-10. *Public release*
 - `CONTRIBUTING.md`: how to set up and run the tests, how the fixtures and the matcher's Playwright spec are laid out, and how to add a check with a fair and an unfair screen. *Publish and promote*
 - README usage checked against the packed build: an `npm pack` install line, a shorter config example with a table of the optional keys, every command and flag with exit codes 0, 1 and 2, and the spec's Won't list spelled out. A test now fails if the README loses ADR-002's wording. *Public release*
 - `docs/checks.md`: what makes each check fire, the default severities and how to change them.
