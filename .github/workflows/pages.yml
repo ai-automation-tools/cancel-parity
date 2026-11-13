@@ -3,7 +3,8 @@ name: Pages
 # Builds the demo on every push to main: runs the mock StreamFlix sign-up flow
 # against the fair and the unfair cancel flow (`npm run demo`, which exits 1
 # unless the fair pair holds and the unfair one fails), then publishes site/
-# with both reports to GitHub Pages.
+# with both reports to GitHub Pages. The page's <meta name="build"> carries the
+# commit it was built from.
 
 on:
   push:
@@ -29,6 +30,10 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run demo
+      - name: Stamp the build
+        run: |
+          sed -i "s/__BUILD_SHA__/${GITHUB_SHA}/" site/index.html
+          grep -q "<meta name=\"build\" content=\"${GITHUB_SHA}\">" site/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

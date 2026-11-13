@@ -48,7 +48,8 @@ Full spec: `docs/product/spec.md`. Slice order: `docs/product/build-plan.md`. De
   serves it locally, runs both pairs and writes their reports to `site/reports/` (gitignored);
   `tests/demo.test.ts` pins the outcome. `.github/workflows/pages.yml` runs `npm run demo` on
   every push to `main` and publishes `site/` with both reports to GitHub Pages
-  (`https://ai-automation-tools.dev/cancel-parity/`). Keep every page path relative and never
+  (`https://ai-automation-tools.dev/cancel-parity/`), replacing `__BUILD_SHA__` in
+  `site/index.html`'s `<meta name="build">` with the commit; leave the placeholder in. Keep every page path relative and never
   add a `CNAME` file: the custom domain is set at graduation.
 
 ## Verify
