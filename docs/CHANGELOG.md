@@ -25,6 +25,7 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 - `cancel-parity run [--config <file>] [--out <dir>]` runs each flow in the config on an instrumented Chromium page and writes `report.json` with its screens, clicks, typed fields and dialogs, and a screenshot per screen with hidden-text inputs painted over. A flow that throws, times out or reaches no screen keeps what it recorded and makes the CLI exit 1. Fixture tests pin exact counts for a two-page site, an SPA and a cross-origin hop. *Slice 0: Instrumented runner*
 
 **Docs**
+- Roadmap: **Harden the runner** is now a release gate (Mike, 2026-11-16) and sits above `## After public release`, so it ships before go-live. *Public release*
 - README: a Live Demo badge in the hero pointing at `https://ai-automation-tools.dev/cancel-parity/`, and the "isn't online yet" warning replaced by a note that the demo is up and the package isn't on npm yet. *Public release*
 - Roadmap rechecked against the org's 2026-11 requirements: the intro names the roadmap routine instead of its days; new release items for the README's Live Demo badge, the build stamp and an owner question on whether runner hardening is a gate; a runner-hardening item and a `minimatch` override at the top of the next slices.
 - The live demo is up at `https://ai-automation-tools.dev/cancel-parity/`, serving the page and both StreamFlix reports, since PR #7 merged on 2026-11-10. *Public release*
