@@ -59,7 +59,7 @@ Nothing below blocks go-live.
 ### 🧩 Next slices
 
 - [ ] **Harden the runner.** `__cancelParity` takes a per-run nonce passed through `addInitScript`; screenshots mask every `input`, `textarea` and `[contenteditable]`; page text is stripped of control characters before it reaches the terminal or a report; a fixture test for each
-- [ ] `small` **minimatch override.** `"overrides": { "minimatch": "^11.0.1" }` in `package.json`, `npm install`, lint and tests pass, Dependabot alert #1 closes
+- [x] `small` **minimatch override.** `"overrides": { "minimatch": "^11.0.1" }` in `package.json`, `npm install`, lint and tests pass, Dependabot alert #1 closes — done 2026-11-16: `package.json` overrides `minimatch` to `^11.0.1`, so the lockfile resolves every copy (eslint's and typescript-estree's) to 11.0.8 and `npm audit` reports 0 vulnerabilities; lint (including a planted-error probe and the `dist/` ignore), tests and build pass; Dependabot alert #1 closes when it rescans `main` after this merges
 - [ ] **Slice 4: GitHub Action.** A wrapper Action that runs cancel-parity and posts a job summary table of both flows' metrics and findings. Tested in this repo's own CI against the mock site.
 - [ ] **Slice 5: false-positive corpus.** 20 or more fair flows (mock, plus patterns from vendors' published fair flows) that the default config must pass. If more than 2 of the first 10 fail, ship the defaults as warnings until fixed (the plan's accuracy gate).
 - [ ] **Slice 6: dated citation map.** The report links each metric to the rule wording it relates to (ROSCA, California ARL, NYC DCWP, Virginia, Colorado), each with a retrieval date and "relates to", never "required by". A CI check fails when a citation is older than 180 days.

@@ -28,6 +28,9 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 - README: a Live Demo badge in the hero pointing at `https://ai-automation-tools.dev/cancel-parity/`, and the "isn't online yet" warning replaced by a note that the demo is up and the package isn't on npm yet. *Public release*
 - Roadmap rechecked against the org's 2026-11 requirements: the intro names the roadmap routine instead of its days; new release items for the README's Live Demo badge, the build stamp and an owner question on whether runner hardening is a gate; a runner-hardening item and a `minimatch` override at the top of the next slices.
 - The live demo is up at `https://ai-automation-tools.dev/cancel-parity/`, serving the page and both StreamFlix reports, since PR #7 merged on 2026-11-10. *Public release*
+
+**Security**
+- `package.json` overrides the dev-only `minimatch` to `^11.0.1` (resolves to 11.0.8 everywhere), clearing GHSA-g3hv-75wg-m249 and Dependabot alert #1; `npm audit` is clean. The published package has no runtime dependencies, so users were never exposed. *Next slices*
 - `CONTRIBUTING.md`: how to set up and run the tests, how the fixtures and the matcher's Playwright spec are laid out, and how to add a check with a fair and an unfair screen. *Publish and promote*
 - README usage checked against the packed build: an `npm pack` install line, a shorter config example with a table of the optional keys, every command and flag with exit codes 0, 1 and 2, and the spec's Won't list spelled out. A test now fails if the README loses ADR-002's wording. *Public release*
 - `docs/checks.md`: what makes each check fire, the default severities and how to change them.
