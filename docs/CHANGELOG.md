@@ -16,6 +16,7 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 ## Unreleased
 
 **Added**
+- Build stamp: the demo page carries `<meta name="build">`, which the Pages workflow fills with the commit it built from, so the live page shows which merge it is. *Public release*
 - `.github/workflows/pages.yml`: on every push to `main` it runs `npm run demo` and publishes `site/` with both StreamFlix reports to GitHub Pages; the build fails unless the fair pair holds and the unfair one fails. *Public release* (part of the live-demo item)
 - HTML report. Every run now writes `report.html` beside `report.json`: one self-contained file with screenshots embedded and no scripts, showing the parity result, both flows' metrics side by side (sign-up with and without payment screens), each screen's findings and screenshot, a coverage block (which flows ran and how they ended, the viewport, and what the run couldn't observe), and ADR-002's wording. *Public release* (part of the live-demo item)
 - The demo's mock StreamFlix site under `site/streamflix/`, one sign-up flow and a fair and an unfair cancel flow, and `npm run demo`, which serves it locally, runs both pairs and writes their reports to `site/reports/`. The demo page now links to both flows and both reports. *Public release* (part of the live-demo item)
@@ -24,8 +25,12 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 - `cancel-parity run [--config <file>] [--out <dir>]` runs each flow in the config on an instrumented Chromium page and writes `report.json` with its screens, clicks, typed fields and dialogs, and a screenshot per screen with hidden-text inputs painted over. A flow that throws, times out or reaches no screen keeps what it recorded and makes the CLI exit 1. Fixture tests pin exact counts for a two-page site, an SPA and a cross-origin hop. *Slice 0: Instrumented runner*
 
 **Docs**
+- README: a Live Demo badge in the hero pointing at `https://ai-automation-tools.dev/cancel-parity/`, and the "isn't online yet" warning replaced by a note that the demo is up and the package isn't on npm yet. *Public release*
 - Roadmap rechecked against the org's 2026-11 requirements: the intro names the roadmap routine instead of its days; new release items for the README's Live Demo badge, the build stamp and an owner question on whether runner hardening is a gate; a runner-hardening item and a `minimatch` override at the top of the next slices.
 - The live demo is up at `https://ai-automation-tools.dev/cancel-parity/`, serving the page and both StreamFlix reports, since PR #7 merged on 2026-11-10. *Public release*
+
+**Security**
+- `package.json` overrides the dev-only `minimatch` to `^11.0.1` (resolves to 11.0.8 everywhere), clearing GHSA-g3hv-75wg-m249 and Dependabot alert #1; `npm audit` is clean. The published package has no runtime dependencies, so users were never exposed. *Next slices*
 - `CONTRIBUTING.md`: how to set up and run the tests, how the fixtures and the matcher's Playwright spec are laid out, and how to add a check with a fair and an unfair screen. *Publish and promote*
 - README usage checked against the packed build: an `npm pack` install line, a shorter config example with a table of the optional keys, every command and flag with exit codes 0, 1 and 2, and the spec's Won't list spelled out. A test now fails if the README loses ADR-002's wording. *Public release*
 - `docs/checks.md`: what makes each check fire, the default severities and how to change them.

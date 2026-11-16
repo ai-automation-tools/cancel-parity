@@ -19,6 +19,7 @@
 </p>
 
 <p align="center">
+  <a href="https://ai-automation-tools.dev/cancel-parity/"><img src="https://img.shields.io/badge/live_demo-ai--automation--tools.dev%2Fcancel--parity-2ea44f?style=for-the-badge&logo=github&logoColor=white" alt="Live demo: ai-automation-tools.dev/cancel-parity"></a>
   <img src="https://img.shields.io/badge/status-MVP_Prototype-F59E0B?style=for-the-badge" alt="Status: MVP prototype">
   <a href="docs/ROADMAP.md"><img src="https://img.shields.io/badge/plan-ROADMAP-8B5CF6?style=for-the-badge" alt="Roadmap"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-2ea44f?style=for-the-badge" alt="License: MIT"></a>
@@ -32,12 +33,13 @@
 
 ---
 
-> [!WARNING]
-> **Everything works except the live demo, which isn't online yet.**
+> [!NOTE]
+> **The MVP works, and the [live demo](https://ai-automation-tools.dev/cancel-parity/) is up.**
 > `cancel-parity run` runs your sign-up and cancel flows, checks every screen, compares the
-> flows, writes an HTML and a JSON report and exits 1 when cancel is harder. The demo site and
-> its reports build locally with `npm run demo`; publishing them to GitHub Pages is next. See
-> the [roadmap](docs/ROADMAP.md).
+> flows, writes an HTML and a JSON report and exits 1 when cancel is harder. The demo runs a
+> mock StreamFlix sign-up against a fair and an unfair cancel flow and shows both reports. It
+> isn't on npm yet; [Install](#install) packs it from a clone. See the
+> [roadmap](docs/ROADMAP.md).
 
 ## 💡 What it's for
 
@@ -63,7 +65,7 @@ It only drives the browser your functions drive. No crawler, no telemetry, no ac
 | **Parity comparison** | Works. Exit 1, or a failing `expect(report).toHaveCancelParity()`, when cancel takes more screens or clicks than sign-up, with a configurable tolerance. Sign-up is reported with and without payment screens. The rule: [docs/parity.md](docs/parity.md). |
 | **Six per-screen checks** | Works. Retention offers, guilt copy, phone-only cancel, pre-checked keep boxes, cancel links at 11px or smaller, countdowns, on every screen of both flows. Phone-only cancel fails by default and the rest warn; each is configurable. The rules: [docs/checks.md](docs/checks.md). |
 | **HTML report** | Works. `report.html` is one self-contained file: both flows' metrics side by side, each screen's findings and screenshot, and a coverage block saying which flows ran, at what viewport, and what wasn't observable. |
-| **Live demo** | Planned. The mock StreamFlix site in `site/`, a fair and an unfair cancel flow, and their reports (`npm run demo` builds them) go on GitHub Pages next. |
+| **Live demo** | Works. [ai-automation-tools.dev/cancel-parity](https://ai-automation-tools.dev/cancel-parity/) serves the mock StreamFlix site in `site/`, a fair and an unfair cancel flow, and both reports, rebuilt by `npm run demo` on every push to `main`. |
 
 ## 🚀 Run your flows
 
@@ -174,7 +176,7 @@ The reasons are in the [spec](docs/product/spec.md).
 |:---|:---|
 | [**📚 docs/**](docs/README.md) | The roadmap, changelog, product spec, build plan and ADRs. |
 | [**🧩 src/**](src/README.md) | The CLI, the instrumented runner, the six checks, the comparison and the matcher. |
-| [**🌐 site/**](site/index.html) | The demo page GitHub Pages will serve, and the mock StreamFlix site with a fair and an unfair cancel flow. |
+| [**🌐 site/**](site/index.html) | The [live demo](https://ai-automation-tools.dev/cancel-parity/) page, and the mock StreamFlix site with a fair and an unfair cancel flow. |
 | [**🤝 CONTRIBUTING.md**](CONTRIBUTING.md) | Running the tests, and adding a check with its fair and unfair fixtures. |
 | [**🔒 SECURITY.md**](SECURITY.md) | How to report a vulnerability. |
 
