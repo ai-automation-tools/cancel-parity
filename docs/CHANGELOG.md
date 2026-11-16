@@ -16,6 +16,7 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 ## Unreleased
 
 **Added**
+- Roadmap: an owner decision in the release phase on business-agent's 2026-11-05 memo (an honestlint check before going public). From the 2026-11-16 org agents usefulness review: business-agent memos on a pipeline project now reach that project's roadmap and the pipeline ledger. *Public release*
 - Build stamp: the demo page carries `<meta name="build">`, which the Pages workflow fills with the commit it built from, so the live page shows which merge it is. *Public release*
 - `.github/workflows/pages.yml`: on every push to `main` it runs `npm run demo` and publishes `site/` with both StreamFlix reports to GitHub Pages; the build fails unless the fair pair holds and the unfair one fails. *Public release* (part of the live-demo item)
 - HTML report. Every run now writes `report.html` beside `report.json`: one self-contained file with screenshots embedded and no scripts, showing the parity result, both flows' metrics side by side (sign-up with and without payment screens), each screen's findings and screenshot, a coverage block (which flows ran and how they ended, the viewport, and what the run couldn't observe), and ADR-002's wording. *Public release* (part of the live-demo item)

@@ -53,6 +53,8 @@ flows this repo owns. No item needs a real company's site or a real account.
 - [x] Decide whether **Harden the runner** (below) is a release gate, since a report screenshot can capture a card number typed on a user's own sign-up payment screen; if yes, move it above this line — done 2026-11-16: yes, it's a gate (Mike); the item moved above `## After public release`
 - [ ] **Harden the runner.** `__cancelParity` takes a per-run nonce passed through `addInitScript`; screenshots mask every `input`, `textarea` and `[contenteditable]`; page text is stripped of control characters before it reaches the terminal or a report; a fixture test for each
 
+- [ ] **Decide on business-agent's 2026-11-05 memo** ([memo](https://github.com/ai-automation-tools/business-agent/blob/main/decisions/2026-11-05-cancel-parity-second-pass.md)): gate the release on honestlint, or release without that gate. The memo recommends checking, before going public, whether honestlint has shipped a sign-up vs cancel ("roach-motel") rule, defined as a released version that contains one, and applying the plan's reconsider rule if it has. Its other recommendation, cutting to Slices 0-2 plus a minimal demo, is moot: Slices 0-3 are done. Since 2026-11-13 honestlint's GitHub repo returns 404 and the npm package (0.3.0, 2026-10-26) is the only place left to check. If the answer is yes, the check becomes a `small` gate here. 🔒 Needs owner
+
 ## After public release
 
 Nothing below blocks go-live.
