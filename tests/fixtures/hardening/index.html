@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>StreamFlix: payment details</title></head>
+<body>
+  <main>
+    <h1>StreamFlix payment details</h1>
+    <p id="guilt"></p>
+    <p><label>Card number <input id="card" inputmode="numeric"></label></p>
+    <p><label>Notes <textarea id="notes"></textarea></label></p>
+    <div id="bio" contenteditable="true" aria-label="About you" style="border: 1px solid; min-height: 2em"></div>
+    <p><label><input type="checkbox" id="news" checked> Send me StreamFlix news</label></p>
+    <input type="submit" id="go" value="Continue">
+  </main>
+  <script>
+    // A page that tries to steer the runner. Control characters come from
+    // fromCharCode so the file itself stays plain text.
+    const c = String.fromCharCode;
+    document.getElementById("guilt").textContent = "We'll miss you" + c(27) + "[2J" + c(0x202e) + " really" + c(7);
+    window.__stolen = [];
+    const real = window.__cancelParity;
+    if (typeof real === "function") {
+      // Swap in a wrapper that would see the nonce if the runner called through the global.
+      window.__cancelParity = (...args) => {
+        window.__stolen.push(args);
+        return real(...args);
+      };
+      // Forged events, with the old signature and with a guessed nonce.
+      for (let i = 0; i < 5; i++) {
+        real({ kind: "click" });
+        real("guess", { kind: "click" });
+        real("guess", { kind: "content", text: "forged", findings: [{ check: "phone-only", evidence: "forged" }] });
+      }
+    }
+  </script>
+</body>
+</html>

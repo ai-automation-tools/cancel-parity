@@ -35,6 +35,18 @@ export function changeRatio(a: string, b: string): number {
   return 1 - shared / longest;
 }
 
+/**
+ * Page text made safe for a terminal or a report: control characters (an ANSI
+ * escape, a bell, a carriage return) and bidi overrides become spaces, then
+ * whitespace collapses.
+ */
+export function plain(s: unknown): string {
+  return String(s)
+    .replace(/[\p{Cc}‎‏‪-‮⁦-⁩]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function words(s: string): string[] {
   return s.toLowerCase().split(/\s+/).filter(Boolean);
 }
@@ -108,10 +120,10 @@ export class Recorder {
     this.act().dialogs++;
   }
 
-  /** A check fired on the page. Kept on the current screen once per check. */
+  /** A check fired on the page. Kept on the current screen once per check, its evidence made plain. */
   found(f: Finding): void {
     const s = this.current;
-    if (s && !s.findings.some((x) => x.check === f.check)) s.findings.push(f);
+    if (s && !s.findings.some((x) => x.check === f.check)) s.findings.push({ ...f, evidence: plain(f.evidence) });
   }
 
   private act(): Screen {

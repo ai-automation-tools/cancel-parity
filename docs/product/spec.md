@@ -57,7 +57,7 @@ A team writes (or records with `npx playwright codegen`) two short Playwright fu
 - No network calls of its own: it only drives the browser the user's functions drive. No telemetry.
 - Default run of both mock flows completes in under 60 s on a GitHub-hosted runner `[assum]`.
 - Report HTML is a single self-contained file, readable offline, meeting basic accessibility (headings, contrast, alt text on screenshots).
-- Secrets: the runner reads test-account credentials only from env vars the user's flow functions read; it never writes them to the report, and screenshots mask every input whose type hides what is typed.
+- Secrets: the runner reads test-account credentials only from env vars the user's flow functions read; it never writes them to the report, and screenshots mask every text input, text area and editable region.
 - Tests: every check has a fair and an unfair fixture; CI runs the full mock-site suite on every PR.
 
 ## Mike's approval notes

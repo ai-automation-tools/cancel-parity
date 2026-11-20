@@ -20,7 +20,7 @@
 | [**checks.ts**](checks.ts) | The six per-screen checks: `scanPage()`, plain DOM code the runner runs inside the page (or `page.evaluate(scanPage)` from any runner), their default severities and the messages for findings. No Playwright in it ([ADR-001](../docs/decisions/adr-001-playwright-typescript-npm.md)). |
 | [**matchers.ts**](matchers.ts) | `toHaveCancelParity()`, for `expect.extend()` in `@playwright/test`. |
 | [**config.ts**](config.ts) | The config type, and loading and checking a config file. |
-| [**runner.ts**](runner.ts) | Runs each flow on an instrumented Playwright page: the in-page listener (which also runs the checks), masked screenshots, the timeout. |
+| [**runner.ts**](runner.ts) | Runs each flow on an instrumented Playwright page: the in-page listener (which also runs the checks) and its per-run nonce, masked screenshots, the timeout. |
 | [**recorder.ts**](recorder.ts) | Turns page events into screens and counts. No Playwright in it, so another runner could feed it ([ADR-001](../docs/decisions/adr-001-playwright-typescript-npm.md)). |
 | [**index.ts**](index.ts) | The package's exports: `cancelParity`, `cancelParityMatchers`, `compareFlows`, `runFlows`, `scanPage`, `CHECKS`, `DEFAULT_SEVERITY`, `CLAIMS_BOUNDARY` and their types. |
 | [**env.ts**](env.ts) | Reads `.env` from a folder into the environment without overwriting anything already set. |

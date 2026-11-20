@@ -21,6 +21,8 @@ credit to you unless you'd rather stay anonymous.
 - A login secret, token or other credential showing up in the JSON report, the HTML report, a
   screenshot or log output.
 - cancel-parity making a network request the user's own flow functions didn't make.
+- A page under test changing what the runner records (counts, screens or findings) through
+  the runner's own channel, or getting a terminal escape sequence into the CLI output.
 - A report or CLI message that states a legal verdict ("compliant", "illegal" and the like).
   The tool reports evidence only; see `docs/decisions/adr-002-evidence-not-verdicts.md`.
 
