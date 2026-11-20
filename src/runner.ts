@@ -1,16 +1,23 @@
+import { randomUUID } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { chromium, type Browser, type Page } from "@playwright/test";
 import { scanPage, severityOf, type RawFinding } from "./checks.ts";
 import type { Config, Flow } from "./config.ts";
-import { Recorder, type Screen } from "./recorder.ts";
+import { plain, Recorder, type Screen } from "./recorder.ts";
 
 export const VIEWPORT = { width: 1280, height: 720 };
 const DEFAULT_TIMEOUT = 60_000;
 const DEFAULT_THRESHOLD = 0.5;
 
-// Built from parts because the repo's commit hook refuses the literal input type.
-export const HIDDEN_INPUT = `input[type=${"pass" + "word"}]`;
+/**
+ * Everything a screenshot paints over: every field that can show what the flow
+ * typed or chose. Checkboxes, radios and input buttons stay visible, because
+ * they show the page's own words and two checks' evidence.
+ */
+export const MASKED =
+  "input:not([type=checkbox], [type=radio], [type=submit], [type=button], [type=reset], [type=image], [type=hidden]), " +
+  "textarea, [contenteditable]:not([contenteditable=false])";
 
 export interface Totals {
   screens: number;
@@ -32,14 +39,17 @@ export interface FlowResult {
 type PageEvent = { kind: "click" | "type" | "key" } | { kind: "content"; text: string; findings: RawFinding[] };
 
 /**
- * Runs inside every frame of the page before its own scripts, given `scanPage`.
- * Plain DOM code, serialized into the page, so it must not reference anything
- * outside itself.
+ * Runs inside every frame of the page before its own scripts, given `scanPage`
+ * and this run's nonce. Plain DOM code, serialized into the page, so it must
+ * not reference anything outside itself.
  */
-function instrument(scan: typeof scanPage): void {
+function instrument(scan: typeof scanPage, nonce: string): void {
+  // Taken now, before the page's scripts run, so a page that replaces the
+  // global never sees the nonce, and one that calls it can't guess it.
+  const binding = (window as unknown as { __cancelParity: (nonce: string, e: PageEvent) => void }).__cancelParity;
   const send = (e: PageEvent) => {
     try {
-      (window as unknown as { __cancelParity: (e: PageEvent) => void }).__cancelParity(e);
+      binding(nonce, e);
     } catch {
       // the page is going away
     }
@@ -79,16 +89,17 @@ function instrument(scan: typeof scanPage): void {
   });
 }
 
-/** Screenshot with every hidden-text input, in every frame, painted over. */
+/** Screenshot with every field that can show typed text, in every frame, painted over. */
 export async function screenshot(page: Page, path: string): Promise<void> {
-  const mask = page.frames().map((f) => f.locator(HIDDEN_INPUT));
+  const mask = page.frames().map((f) => f.locator(MASKED));
   await page.screenshot({ path, mask });
 }
 
 class TimeoutError extends Error {}
 
+/** An error's first line, made plain: a flow's error can quote the page. */
 function firstLine(err: unknown): string {
-  return (err instanceof Error ? err.message : String(err)).split("\n")[0];
+  return plain((err instanceof Error ? err.message : String(err)).split("\n")[0]);
 }
 
 export async function runFlow(
@@ -114,7 +125,11 @@ export async function runFlow(
     shots.push(screenshot(page, join(outDir, rel)).catch(() => void (screen.screenshot = null)));
   };
 
-  await page.exposeFunction("__cancelParity", (e: PageEvent) => {
+  // The page's own scripts can call the binding too; only calls carrying this
+  // run's nonce count.
+  const nonce = randomUUID();
+  await page.exposeFunction("__cancelParity", (n: unknown, e: PageEvent) => {
+    if (n !== nonce) return;
     if (e.kind === "click") rec.click();
     else if (e.kind === "type") rec.typed();
     else if (e.kind === "key") rec.key();
@@ -127,7 +142,7 @@ export async function runFlow(
       shoot(rec.current); // no-op once the screen has its shot
     }
   });
-  await page.addInitScript(`(${instrument})(${scanPage})`);
+  await page.addInitScript(`(${instrument})(${scanPage}, ${JSON.stringify(nonce)})`);
   page.on("framenavigated", (frame) => {
     if (frame === page.mainFrame()) rec.navigated(frame.url());
   });

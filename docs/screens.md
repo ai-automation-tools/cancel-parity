@@ -53,8 +53,12 @@ flow's totals.
 ## Screenshots
 
 Every screen gets a PNG under `screenshots/` in the output folder, taken as soon as the
-screen reports its content. Every input whose type hides what is typed is painted over in
-every frame, and a test reads the pixel back to prove it. The shot runs alongside the flow,
+screen reports its content. Every field that can show what the flow typed or chose is
+painted over in every frame: each `input` except checkboxes, radios and input buttons
+(`submit`, `button`, `reset`, `image`, `hidden`), each `textarea`, and each editable region
+(`[contenteditable]`). Checkboxes and buttons stay visible because they carry the page's own
+words, and two checks' evidence (a pre-checked box, a tiny cancel button). A test reads the
+pixels back to prove both halves. The shot runs alongside the flow,
 so a screen the flow leaves within a few milliseconds may record `null`, or show the first
 moment of the next action. The last screen is always captured.
 
@@ -65,6 +69,13 @@ moment of the next action. The last screen is always captured.
   emails ride in query strings.
 - **Dialog text.** Only the count.
 - **Error detail.** A flow that throws or times out records the first line of the error.
+- **Control characters.** Check evidence and error lines can quote the page, so ANSI
+  escapes, other control characters and bidi overrides become spaces before they reach the
+  terminal, `report.json` or `report.html`.
+- **The page's own say.** The in-page listener reports to the runner through
+  `__cancelParity` with a nonce made for each run. The listener takes the function before the
+  page's scripts run, and the runner ignores any call without the nonce, so a page can't add
+  clicks, screens or findings of its own.
 
 ## Flow outcomes
 

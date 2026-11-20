@@ -93,7 +93,12 @@ Carried from the spec. If a roadmap item seems to need one of these, stop and fl
   user's functions drive. Tests use local mock sites and never reach the internet.
 - **Credentials never leave the environment.** Test-account details are read only from env
   vars the user's flow functions read. They never appear in JSON, HTML, logs or screenshots;
-  screenshots mask every input whose type hides what is typed, and a test proves it.
+  screenshots mask every text input, text area and editable region (checkboxes, radios and
+  input buttons stay visible), and a test proves it.
+- **The page under test is untrusted.** The in-page listener reports through `__cancelParity`
+  with a per-run nonce, so the page's own scripts can't add counts or findings, and page text
+  is stripped of control characters (`plain()` in `src/recorder.ts`) before it reaches the
+  terminal or a report.
 - **Settings live in `.env`, names in `.env.example`.** The CLI loads `.env` from the working
   directory (`src/env.ts`), and a variable already in the real environment wins. Any new
   setting gets a line in `.env.example` saying where its value comes from, never the value.

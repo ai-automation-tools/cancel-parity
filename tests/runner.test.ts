@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { chromium, type Browser } from "@playwright/test";
+import { chromium, type Browser, type Page } from "@playwright/test";
 import { run } from "../src/run.ts";
-import { HIDDEN_INPUT, runFlow, screenshot } from "../src/runner.ts";
+import { runFlow, screenshot } from "../src/runner.ts";
 import type { Config, Flow } from "../src/config.ts";
 import { serve } from "./fixtures/serve.ts";
 
@@ -116,17 +116,21 @@ test("an empty flow is reported as empty", async () => {
   assert.deepEqual(r.totals, { screens: 0, clicks: 0, typedFields: 0, dialogs: 0 });
 });
 
-test("screenshots paint over hidden-text inputs", async () => {
-  const page = await browser.newPage();
-  await page.goto(`${site.url}multipage/`);
-  await page.locator("#secret").fill(SECRET);
+const MAGENTA = [255, 0, 255]; // Playwright's mask colour
+
+/** Takes a masked screenshot and reads back the pixel at the centre of each selector's element. */
+async function shotCentres(page: Page, selectors: string[]): Promise<number[][]> {
   const file = join(tmp(), "shot.png");
   await screenshot(page, file);
-  const box = (await page.locator(HIDDEN_INPUT).boundingBox())!;
   const png = readFileSync(file).toString("base64");
-  // Read the pixel at the field's centre back out of the PNG, in the browser.
-  const rgb = await page.evaluate(
-    async ({ png, x, y }) => {
+  const points = [];
+  for (const s of selectors) {
+    const box = (await page.locator(s).boundingBox())!;
+    points.push({ x: Math.round(box.x + box.width / 2), y: Math.round(box.y + box.height / 2) });
+  }
+  // Read the pixels back out of the PNG, in the browser.
+  return page.evaluate(
+    async ({ png, points }) => {
       const img = new Image();
       img.src = `data:image/png;base64,${png}`;
       await img.decode();
@@ -135,12 +139,57 @@ test("screenshots paint over hidden-text inputs", async () => {
       c.height = img.height;
       const ctx = c.getContext("2d")!;
       ctx.drawImage(img, 0, 0);
-      return [...ctx.getImageData(x, y, 1, 1).data.slice(0, 3)];
+      return points.map(({ x, y }) => [...ctx.getImageData(x, y, 1, 1).data.slice(0, 3)]);
     },
-    { png, x: Math.round(box.x + box.width / 2), y: Math.round(box.y + box.height / 2) },
+    { png, points },
   );
+}
+
+test("screenshots paint over hidden-text inputs", async () => {
+  const page = await browser.newPage();
+  await page.goto(`${site.url}multipage/`);
+  await page.locator("#secret").fill(SECRET);
+  const [rgb] = await shotCentres(page, ["#secret"]);
   await page.close();
-  assert.deepEqual(rgb, [255, 0, 255]); // Playwright's mask colour
+  assert.deepEqual(rgb, MAGENTA);
+});
+
+test("screenshots paint over every text input, text area and editable region, and leave boxes and buttons", async () => {
+  const page = await browser.newPage();
+  await page.goto(`${site.url}hardening/`);
+  await page.locator("#card").fill("4242 4242 4242 4242");
+  await page.locator("#notes").fill(SECRET);
+  await page.locator("#bio").fill(SECRET);
+  const [card, notes, bio, news, go] = await shotCentres(page, ["#card", "#notes", "#bio", "#news", "#go"]);
+  await page.close();
+  assert.deepEqual([card, notes, bio], [MAGENTA, MAGENTA, MAGENTA]);
+  assert.notDeepEqual(news, MAGENTA);
+  assert.notDeepEqual(go, MAGENTA);
+});
+
+test("a page can't feed the runner events: only calls with the run's nonce count", async () => {
+  let stolen = -1;
+  const r = await go(async (page) => {
+    await page.goto("hardening/");
+    await page.locator("h1").click();
+    stolen = await page.evaluate(() => (window as unknown as { __stolen: unknown[] }).__stolen.length);
+  });
+  assert.equal(r.status, "ok");
+  // The page forged 10 clicks and a phone-only finding; only the flow's own click counts.
+  assert.deepEqual(r.totals, { screens: 1, clicks: 1, typedFields: 0, dialogs: 0 });
+  assert.ok(!r.screens[0].findings.some((f) => f.check === "phone-only"));
+  // The runner never called through the global the page swapped out, so the page never saw the nonce.
+  assert.equal(stolen, 0);
+});
+
+test("control characters in page text and errors never reach the report or the terminal", async () => {
+  const r = await go(async (page) => {
+    await page.goto("hardening/");
+    throw new Error(`bad${String.fromCharCode(27)}[2J${String.fromCharCode(0x202e)}page text`);
+  });
+  assert.equal(r.error, "bad [2J page text");
+  const guilt = r.screens[0].findings.find((f) => f.check === "guilt-copy");
+  assert.equal(guilt?.evidence, "We'll miss you [2J really");
 });
 
 test("cancel-parity run writes the report, and a typed secret never reaches it or the output", async () => {
