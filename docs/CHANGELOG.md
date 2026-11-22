@@ -15,6 +15,9 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 
 ## Unreleased
 
+**Changed**
+- Roadmap: the honestlint decision is made (2026-11-22, Mike): release without the honestlint gate. honestlint 0.3.0 on npm, its latest release, has no `roach-motel` rule (only a planned line in its README), so the memo's reconsider condition doesn't apply. *Public release*
+
 **Added**
 - Roadmap: an owner decision in the release phase on business-agent's 2026-11-05 memo (an honestlint check before going public). From the 2026-11-16 org agents usefulness review: business-agent memos on a pipeline project now reach that project's roadmap and the pipeline ledger. *Public release*
 - Build stamp: the demo page carries `<meta name="build">`, which the Pages workflow fills with the commit it built from, so the live page shows which merge it is. *Public release*
