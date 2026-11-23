@@ -2,6 +2,11 @@
 
 ## Open
 
+### All release gates are ticked: should runs build Slice 4 and on before the 90-day test, or wait?
+- Asked: 2026-11-23 by cancel-parity-roadmap
+- Context: Every item above `## After public release` is `[x]` (CI green on `main` since #16), and the repo is still private. The next open roadmap item is **Slice 4: GitHub Action**, but `docs/product/build-plan.md` says "Everything from Slice 4 on is built after release, and only if the 90-day test in the memo says keep going", and `AGENTS.md` says that call is yours. The roadmap routine itself says to move below the line once nothing above it is workable, so the two disagree, and runs go quiet until you settle it. Options: (a) wait: runs stay quiet (or take only `small` maintenance items) until you make the repo public and the 90-day test says keep going; (b) build now: runs take Slice 4, then 5 and 6, before or during the 90 days, and the build plan's sentence gets changed to match; (c) build only Slice 5 (the false-positive corpus) now, since it tests the defaults the MVP already ships, and hold Slices 4 and 6-8 for the test. Recommendation: (c). The corpus protects the release itself (the build plan's accuracy gate), while the Action and the citation map only matter if people adopt the tool, which is what the test measures. Going public is the step that unblocks everything, and only you can take it.
+- Answer:
+
 ## Answered
 
 ### Is "Harden the runner" a release gate?
