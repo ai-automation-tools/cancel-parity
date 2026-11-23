@@ -15,6 +15,9 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 
 ## Unreleased
 
+**Fixed**
+- A stalled screenshot no longer hangs a run. Screenshots now give up after 5s and the screen keeps `screenshot: null`. Inside `@playwright/test`, which sets no action timeout, one stalled shot used to hang `cancelParity()` until the test timeout; elsewhere it cost 30s. CI is green on `main` again, and the suite runs in about 40s instead of about 296s. *Public release*
+
 **Changed**
 - Roadmap: the honestlint decision is made (2026-11-22, Mike): release without the honestlint gate. honestlint 0.3.0 on npm, its latest release, has no `roach-motel` rule (only a planned line in its README), so the memo's reconsider condition doesn't apply. *Public release*
 
