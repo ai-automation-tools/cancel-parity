@@ -9,6 +9,7 @@ import { plain, Recorder, type Screen } from "./recorder.ts";
 export const VIEWPORT = { width: 1280, height: 720 };
 const DEFAULT_TIMEOUT = 60_000;
 const DEFAULT_THRESHOLD = 0.5;
+const SCREENSHOT_TIMEOUT = 5_000; // a normal shot takes well under 100 ms
 
 /**
  * Everything a screenshot paints over: every field that can show what the flow
@@ -92,7 +93,11 @@ function instrument(scan: typeof scanPage, nonce: string): void {
 /** Screenshot with every field that can show typed text, in every frame, painted over. */
 export async function screenshot(page: Page, path: string): Promise<void> {
   const mask = page.frames().map((f) => f.locator(MASKED));
-  await page.screenshot({ path, mask });
+  // A shot started as the flow navigates away can stall, and Playwright queues
+  // every later shot on the page behind it. @playwright/test sets no action
+  // timeout, so without this one a stall hangs the run until the test is killed.
+  // ponytail: a stalled shot is dropped (screenshot: null), not retried.
+  await page.screenshot({ path, mask, timeout: SCREENSHOT_TIMEOUT });
 }
 
 class TimeoutError extends Error {}
