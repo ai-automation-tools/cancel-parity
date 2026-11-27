@@ -72,6 +72,7 @@ Nothing below blocks go-live.
 - [ ] **Channel parity (Slices 7-8, Could).** Detect "email, chat or call us to cancel" and flag it when sign-up was online only.
 - [ ] **Mobile viewport (Slices 7-8, Could).** A second run of both flows at a phone viewport, reported beside the desktop run.
 - [ ] **fairux export (Slices 7-8, Could).** Export a captured journey in fairux's `scan-journey` format.
+- [ ] **Virtual-agent check.** A seventh per-screen check, `virtual-agent`, in `scanPage()`: it fires on a cancel-flow screen that puts a live or virtual representative between the user and cancelling (an open chat widget or chat transcript, such as `role="log"` beside a message box, or copy like "chat with our assistant to cancel") when no sign-up screen did. It warns by default and is configurable like the other six, with its evidence text in the report and its rule in `docs/checks.md`. Unlike channel parity above, which flags being sent off the site to email, chat or phone, this flags a chat step inside the web flow. Done when a fair and an unfair StreamFlix screen in `tests/checks.test.ts` leave it silent and make it fire, it never fires on the fair cancel flow, and `npm run lint`, `npm test` and `npm run build` pass. (source: https://www.gtlaw.com/he/insights/2026/5/virginia-enacts-automatic-renewal-consumer-protection-law, 2026-05-21; https://mgaleg.maryland.gov/2026RS/Statute_Web/gcl/14-1329.pdf, 2026-06-01)
 
 ### 📣 Publish and promote
 
