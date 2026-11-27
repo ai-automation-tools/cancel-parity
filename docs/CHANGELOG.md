@@ -15,6 +15,8 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 
 ## Unreleased
 
+- `CLAUDE.md` is gone: Claude Code reads `AGENTS.md` directly.
+
 **Fixed**
 - A stalled screenshot no longer hangs a run. Screenshots now give up after 5s and the screen keeps `screenshot: null`. Inside `@playwright/test`, which sets no action timeout, one stalled shot used to hang `cancelParity()` until the test timeout; elsewhere it cost 30s. CI is green on `main` again, and the suite runs in about 40s instead of about 296s. *Public release*
 
