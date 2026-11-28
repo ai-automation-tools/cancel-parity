@@ -15,6 +15,8 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 
 ## Unreleased
 
+- `CLAUDE.md` is gone: Claude Code reads `AGENTS.md` directly.
+
 **Fixed**
 - A stalled screenshot no longer hangs a run. Screenshots now give up after 5s and the screen keeps `screenshot: null`. Inside `@playwright/test`, which sets no action timeout, one stalled shot used to hang `cancelParity()` until the test timeout; elsewhere it cost 30s. CI is green on `main` again, and the suite runs in about 40s instead of about 296s. *Public release*
 
@@ -22,6 +24,7 @@ Entries that close a roadmap item carry the roadmap phase in italics.
 - Roadmap: the honestlint decision is made (2026-11-22, Mike): release without the honestlint gate. honestlint 0.3.0 on npm, its latest release, has no `roach-motel` rule (only a planned line in its README), so the memo's reconsider condition doesn't apply. *Public release*
 
 **Added**
+- Roadmap: a **Virtual-agent check** at the end of the next slices, flagging a cancel flow that puts a chat or bot step between the user and cancelling when sign-up had none. From the 2026-11-27 roadmap refresh: Maryland's auto-renewal law (in force since 2026-06-01) and Virginia's amendments (since 2026-07-01) both bar requiring a live or virtual representative to cancel online, and none of the six checks sees one. *After public release*
 - `docs/UPSTREAMS.md` and `.github/dependabot.yml`: the worklist for the biweekly upstream check (Playwright, Node, the build tools, GitHub Actions and Pages) and weekly grouped Dependabot updates for npm and GitHub Actions, minor and patch only.
 - Roadmap: an owner decision in the release phase on business-agent's 2026-11-05 memo (an honestlint check before going public). From the 2026-11-16 org agents usefulness review: business-agent memos on a pipeline project now reach that project's roadmap and the pipeline ledger. *Public release*
 - Build stamp: the demo page carries `<meta name="build">`, which the Pages workflow fills with the commit it built from, so the live page shows which merge it is. *Public release*
