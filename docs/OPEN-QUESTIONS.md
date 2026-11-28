@@ -7,6 +7,11 @@
 - Context: Every item above `## After public release` is `[x]` (CI green on `main` since #16), and the repo is still private. The next open roadmap item is **Slice 4: GitHub Action**, but `docs/product/build-plan.md` says "Everything from Slice 4 on is built after release, and only if the 90-day test in the memo says keep going", and `AGENTS.md` says that call is yours. The roadmap routine itself says to move below the line once nothing above it is workable, so the two disagree, and runs go quiet until you settle it. Options: (a) wait: runs stay quiet (or take only `small` maintenance items) until you make the repo public and the 90-day test says keep going; (b) build now: runs take Slice 4, then 5 and 6, before or during the 90 days, and the build plan's sentence gets changed to match; (c) build only Slice 5 (the false-positive corpus) now, since it tests the defaults the MVP already ships, and hold Slices 4 and 6-8 for the test. Recommendation: (c). The corpus protects the release itself (the build plan's accuracy gate), while the Action and the citation map only matter if people adopt the tool, which is what the test measures. Going public is the step that unblocks everything, and only you can take it.
 - Answer:
 
+### Raise the `engines` floor from Node 20.12, which is end of life?
+- Asked: 2026-11-26 by cancel-parity-upstream
+- Context: `package.json` says `engines` `>=20.12`, and Node 20 reached end of life on 2026-04-30 (github.com/nodejs/Release `schedule.json`: 22 runs to 2027-04-30, 24 to 2028-04-30). Playwright 1.65.1 itself still takes Node `>=20`. Options: (a) keep `>=20.12` so teams still on 20 can install it; (b) raise to `>=22.18`, matching what contributors already need and what CI runs; (c) raise to `>=22.12` or similar, the smallest floor on a supported line. Recommendation: (b), as the one number the README, `AGENTS.md` and CI then agree on. `engines` is a hold path, so this run changed nothing.
+- Answer:
+
 ## Answered
 
 ### Is "Harden the runner" a release gate?
